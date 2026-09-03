@@ -1,0 +1,574 @@
+<title>Priors on Trial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --ground:#EAEEF4; --surface:#FBFCFE; --surface-2:#F1F4F9; --band:#DFE5EE;
+  --ink:#0F141A; --ink-2:#39424F; --ink-3:#59626F;
+  --rule:#C7CEDA; --rule-2:#ACB5C3;
+  --prior:#845A0D; --like:#9E3378; --post:#0D62BA;
+  --post-soft:rgba(13,98,186,.15); --post-fill:rgba(13,98,186,.26);
+  --accent:#0D62BA; --good:#186340; --shadow:0 1px 2px rgba(20,25,32,.06),0 8px 24px -14px rgba(20,25,32,.28);
+  --f-display:"Spectral",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C0F13; --surface:#161A21; --surface-2:#1D222B; --band:#272E3B;
+    --ink:#F2F5F9; --ink-2:#BFC7D3; --ink-3:#9AA4B2;
+    --rule:#333B48; --rule-2:#47515F;
+    --prior:#C68519; --like:#E15F9F; --post:#5A8CF0;
+    --post-soft:rgba(90,140,240,.18); --post-fill:rgba(90,140,240,.30);
+    --accent:#5A8CF0; --good:#5FC896; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C0F13; --surface:#161A21; --surface-2:#1D222B; --band:#272E3B;
+  --ink:#F2F5F9; --ink-2:#BFC7D3; --ink-3:#9AA4B2;
+  --rule:#333B48; --rule-2:#47515F;
+  --prior:#C68519; --like:#E15F9F; --post:#5A8CF0;
+  --post-soft:rgba(90,140,240,.18); --post-fill:rgba(90,140,240,.30);
+  --accent:#5A8CF0; --good:#5FC896; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--f-body);font-size:19px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;padding:0 20px 56px}
+.wrap{max-width:1340px;margin:0 auto}
+
+header.mast{padding:34px 0 18px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 26px;
+  border-bottom:1px solid var(--rule-2)}
+.eyebrow{font-family:var(--f-mono);font-size:14px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(36px,5vw,54px);line-height:1;margin:0;
+  letter-spacing:-.015em;flex:none}
+h1 em{font-style:italic;font-weight:500;color:var(--post)}
+.mast .eyebrow{padding-bottom:3px}
+
+.gk{text-transform:none}
+
+.grid{display:grid;grid-template-columns:366px minmax(0,1fr);gap:22px 30px;margin-top:26px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.railcell{display:flex;flex-direction:column;gap:13px;min-width:0}
+.figspan{grid-column:1/-1}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:3px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column}
+.railcell .panel:last-child{flex:1}
+.panel > h2{font-family:var(--f-mono);font-size:14px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-2);margin:0;padding:11px 15px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+  border-radius:3px 3px 0 0;font-weight:600}
+.panel .body{padding:14px 15px 16px;display:flex;flex-direction:column;gap:13px;flex:1}
+.panel .body > .protocol:last-child,.panel .body > .weigh:last-child{margin-top:auto}
+.field{display:flex;flex-direction:column;gap:4px}
+.field .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.field label{font-size:17px;color:var(--ink-2)}
+.field .num{font-family:var(--f-mono);font-size:17px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px;margin:0;cursor:pointer}
+input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+.protocol{font-family:var(--f-mono);font-size:14.5px;color:var(--ink-3);line-height:1.7;
+  border-top:1px dashed var(--rule-2);padding-top:10px}
+.protocol span{color:var(--ink-2)}
+button{font-family:var(--f-body);font-size:17px;color:var(--ink);background:var(--surface-2);
+  border:1px solid var(--rule-2);border-radius:2px;padding:7px 11px;cursor:pointer;transition:background .12s,border-color .12s}
+button:hover{background:var(--band);border-color:var(--ink-3)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{text-align:left;line-height:1.25;padding:7px 9px}
+.chip .cn{display:block;font-size:16px}
+.chip .cd{display:block;font-family:var(--f-mono);font-size:13px;color:var(--ink-3);margin-top:2px}
+.chip[aria-pressed="true"]{background:var(--post-soft);border-color:var(--post)}
+.chip[aria-pressed="true"] .cd{color:var(--post)}
+.resim{width:100%}
+.weigh{border-top:1px dashed var(--rule-2);padding-top:11px}
+.weigh .cap{font-family:var(--f-mono);font-size:13.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.bar{display:flex;height:13px;margin-top:8px;border-radius:1px;overflow:hidden;background:var(--band)}
+.bar i{display:block;height:100%}
+.bar i.p{background:var(--prior)}
+.bar i.d{background:var(--like);margin-left:2px}
+.weigh .lg{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:14.5px;margin-top:6px;
+  color:var(--ink-2);font-variant-numeric:tabular-nums}
+.weigh .n0{font-family:var(--f-mono);font-size:14.5px;color:var(--ink-3);margin-top:8px;line-height:1.5}
+.weigh .n0 b{color:var(--ink);font-weight:500}
+
+figure{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+figcaption{padding:12px 18px 11px;border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;
+  align-items:baseline;justify-content:space-between;gap:6px 18px}
+.fignum{font-family:var(--f-mono);font-size:14px;letter-spacing:.13em;text-transform:uppercase;color:var(--post)}
+figcaption h3{font-family:var(--f-display);font-size:26px;font-weight:600;margin:2px 0 0;letter-spacing:-.005em}
+.hint{font-family:var(--f-mono);font-size:13.5px;color:var(--ink-3)}
+.plot{padding:6px 14px 12px;flex:1;display:flex;flex-direction:column;justify-content:center}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;padding:11px 18px 0}
+.lgi{display:flex;align-items:center;gap:7px;font-family:var(--f-mono);font-size:16px;color:var(--ink-2);
+  padding:5px 0;cursor:pointer;user-select:none;transition:color .12s}
+.lgi:hover{color:var(--ink)}
+.lgi input{accent-color:var(--accent);width:19px;height:19px;margin:0 1px 0 0;cursor:pointer;flex:none}
+.lgi input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lgi[data-on="0"]{color:var(--ink-3)}
+.lgi[data-on="0"] .sw{opacity:.28}
+.sw{width:22px;height:5px;border-radius:2px;flex:none}
+.sw.dash{background:repeating-linear-gradient(90deg,currentColor 0 5px,transparent 5px 9px)}
+
+table{width:100%;border-collapse:collapse;font-size:17px}
+.tbl{overflow-x:auto;border-top:1px solid var(--rule)}
+th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-family:var(--f-mono);font-size:13.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;background:var(--surface-2)}
+tbody td{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink-2)}
+tbody td:first-child{font-family:var(--f-body);color:var(--ink)}
+tbody tr:last-child td{border-bottom:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--ground);
+  font-family:var(--f-mono);font-size:15px;padding:8px 11px;border-radius:2px;white-space:nowrap;
+  opacity:0;transition:opacity .1s;z-index:5;line-height:1.5;font-variant-numeric:tabular-nums}
+.tipwrap{position:relative}
+
+footer{margin-top:20px;font-family:var(--f-mono);font-size:13.5px;color:var(--ink-3);
+  border-top:1px solid var(--rule);padding-top:13px;line-height:1.7}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header class="mast">
+  <h1>Priors on <em>Trial</em></h1>
+  <div class="eyebrow">Two-arm trial · normal–inverse-gamma conjugate · 6-minute walk distance (m)</div>
+</header>
+
+<div class="grid">
+
+  <div class="railcell">
+    <section class="panel">
+      <h2>1 · The trial</h2>
+      <div class="body">
+        <div class="field"><div class="row"><label for="n">Patients per arm</label><span class="num" id="n-v">60</span></div>
+          <input type="range" id="n" min="10" max="400" step="5" value="60"></div>
+        <div class="field"><div class="row"><label for="tau">True effect simulated</label><span class="num" id="tau-v">+25 m</span></div>
+          <input type="range" id="tau" min="-20" max="80" step="1" value="25"></div>
+        <div class="field"><div class="row"><label for="sd">True SD σ</label><span class="num" id="sd-v">80 m</span></div>
+          <input type="range" id="sd" min="30" max="130" step="1" value="80"></div>
+        <button class="resim" id="resim">↻ Draw a new trial</button>
+        <div class="field"><div class="row"><label for="mcid">MCID</label><span class="num" id="mcid-v">30 m</span></div>
+          <input type="range" id="mcid" min="0" max="70" step="1" value="30"></div>
+        <div class="protocol">Control mean <span>320 m</span> · seed <span id="seed-v">4187</span></div>
+      </div>
+    </section>
+  </div>
+
+  <figure>
+    <figcaption><div><div class="fignum">Figure 1</div><h3>The simulated trial</h3></div>
+      <span class="hint">one dot per patient · tick = arm mean, bar = 95% CI</span></figcaption>
+    <div class="plot"><div id="fig1"></div></div>
+    <div class="tbl"><table id="tbl1"><thead><tr><th>Arm</th><th>n</th><th>Mean 6MWD</th><th>SD</th><th>SE of mean</th></tr></thead><tbody></tbody></table></div>
+  </figure>
+
+  <div class="railcell">
+    <section class="panel">
+      <h2>2 · Prior on the effect <span class="gk">δ</span></h2>
+      <div class="body">
+        <div class="chips" id="chips">
+          <button class="chip" data-m="0" data-s="200"><span class="cn">Reference</span><span class="cd">0 ± 200</span></button>
+          <button class="chip" data-m="0" data-s="30.4"><span class="cn">Sceptical</span><span class="cd">0 ± 30.4</span></button>
+          <button class="chip" data-m="50" data-s="30.4"><span class="cn">Enthusiastic</span><span class="cd">50 ± 30.4</span></button>
+          <button class="chip" data-m="18" data-s="12"><span class="cn">Previous trial</span><span class="cd">18 ± 12</span></button>
+        </div>
+        <div class="field"><div class="row"><label for="m0">Location <em>m</em>₀</label><span class="num" id="m0-v">0 m</span></div>
+          <input type="range" id="m0" min="-40" max="80" step="1" value="0"></div>
+        <div class="field"><div class="row"><label for="s0">Scale <em>s</em>₀</label><span class="num" id="s0-v">30.4 m</span></div>
+          <input type="range" id="s0" min="0" max="1000" step="1" value="592"></div>
+        <div class="weigh">
+          <div class="cap">Information in the posterior</div>
+          <div class="bar"><i class="p" id="bar-p" style="width:17%"></i><i class="d" id="bar-d" style="width:83%"></i></div>
+          <div class="lg"><span id="w-prior">Prior 17%</span><span id="w-data">Data 83%</span></div>
+          <div class="n0" id="n0-txt">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>3 · Prior on the variance <span class="gk">σ²</span></h2>
+      <div class="body">
+        <div class="field"><div class="row"><label for="sig0">Best guess σ₀</label><span class="num" id="sig0-v">80 m</span></div>
+          <input type="range" id="sig0" min="30" max="130" step="1" value="80"></div>
+        <div class="field"><div class="row"><label for="nu0">Worth ν₀ observations</label><span class="num" id="nu0-v">20</span></div>
+          <input type="range" id="nu0" min="1" max="600" step="1" value="200"></div>
+        <div class="protocol" id="ig-txt">—</div>
+      </div>
+    </section>
+  </div>
+
+  <figure>
+    <figcaption><div><div class="fignum">Figure 2</div><h3>Prior, data, posterior</h3></div>
+      <span class="hint">hover to read P(δ &gt; x)</span></figcaption>
+    <div class="legend">
+      <label class="lgi" data-on="1"><input type="checkbox" data-k="prior" checked><i class="sw dash" style="color:var(--prior)"></i>Prior</label>
+      <label class="lgi" data-on="0"><input type="checkbox" data-k="like"><i class="sw" style="background:var(--like)"></i>Likelihood</label>
+      <label class="lgi" data-on="0"><input type="checkbox" data-k="post"><i class="sw" style="background:var(--post)"></i>Posterior</label>
+    </div>
+    <div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div>
+  </figure>
+
+  <figure class="figspan">
+    <figcaption><div><div class="fignum">Figure 3</div><h3>The same data under five priors</h3></div>
+      <span class="hint">bottom row: pooled two-sample <i>t</i></span></figcaption>
+    <div class="plot"><div id="fig3"></div></div>
+  </figure>
+
+</div>
+
+<footer>Simulated data · δ | σ² ~ N(m₀, σ²s₀²/σ₀²) and σ² ~ Inv-Gamma(ν₀/2, ν₀σ₀²/2) on the two-group model, so marginals are scaled <i>t</i> · sceptical and enthusiastic priors are scaled so 50 m sits at the 5% point of the corresponding normal (Spiegelhalter)</footer>
+</div>
+
+<script>
+"use strict";
+/* ---------- maths ---------- */
+const ERFC=[-1.3026537197817094,6.4196979235649026e-1,1.9476473204185836e-2,-9.561514786808631e-3,
+ -9.46595344482036e-4,3.66839497852761e-4,4.2523324806907e-5,-2.0278578112534e-5,-1.624290004647e-6,
+ 1.30365583558e-6,1.5626441722e-8,-8.5238095915e-8,6.529054439e-9,5.059343495e-9,-9.91364156e-10,
+ -2.27365122e-10,9.6467911e-11,2.394038e-12,-6.886027e-12,8.94487e-13,3.13092e-13,-1.12708e-13,3.81e-16,7.106e-15];
+function erfc(x){const z=Math.abs(x),t=2/(2+z),ty=4*t-2;let d=0,dd=0;
+ for(let j=ERFC.length-1;j>0;j--){const tmp=d;d=ty*d-dd+ERFC[j];dd=tmp;}
+ const ans=t*Math.exp(-z*z+0.5*(ERFC[0]+ty*d)-dd);return x>=0?ans:2-ans;}
+const G=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,
+ 0.1208650973866179e-2,-0.5395239384953e-5];
+function lgamma(x){let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;
+ for(let j=0;j<6;j++)ser+=G[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const FP=1e-300;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;
+ if(Math.abs(d)<FP)d=FP;d=1/d;let h=d;
+ for(let m=1;m<=300;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+  d=1+aa*d;if(Math.abs(d)<FP)d=FP;c=1+aa/c;if(Math.abs(c)<FP)c=FP;d=1/d;h*=d*c;
+  aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+  d=1+aa*d;if(Math.abs(d)<FP)d=FP;c=1+aa/c;if(Math.abs(c)<FP)c=FP;d=1/d;const del=d*c;h*=del;
+  if(Math.abs(del-1)<3e-14)break;}
+ return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;
+ const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+ return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+/* standard t */
+const pt=(t,df)=>t>=0?1-0.5*ibeta(df/2,0.5,df/(df+t*t)):0.5*ibeta(df/2,0.5,df/(df+t*t));
+function qt(p,df){let lo=-400,hi=400;for(let i=0;i<200;i++){const m=(lo+hi)/2;if(pt(m,df)<p)lo=m;else hi=m;}return (lo+hi)/2;}
+/* scaled t: location m, scale s, df v */
+const dst=(x,m,s,v)=>Math.exp(lgamma((v+1)/2)-lgamma(v/2)-0.5*Math.log(v*Math.PI)-Math.log(s)
+   -((v+1)/2)*Math.log(1+Math.pow((x-m)/s,2)/v));
+const pst=(x,m,s,v)=>pt((x-m)/s,v);
+const qst=(p,m,s,v)=>m+s*qt(p,v);
+/* chi-square quantile, Wilson-Hilferty */
+function qchisq(p,k){const z=p<0.5?-1.959964:1.959964;
+ return k*Math.pow(1-2/(9*k)+z*Math.sqrt(2/(9*k)),3);}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+ t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function gaussFactory(rng){let spare=null;return function(){if(spare!==null){const v=spare;spare=null;return v;}
+ let u,v,s;do{u=2*rng()-1;v=2*rng()-1;s=u*u+v*v;}while(s>=1||s===0);
+ const f=Math.sqrt(-2*Math.log(s)/s);spare=v*f;return u*f;};}
+
+/* ---------- formatting ---------- */
+const MIN=(x)=>x<0?"−"+Math.abs(x):""+x;
+const f1=(x)=>MIN((Math.round(x*10)/10).toFixed(1));
+const f0=(x)=>MIN(Math.round(x));
+const sgn1=(x)=>(x>=0?"+":"−")+Math.abs(x).toFixed(1);
+const pct=(p)=>(p>=0.9995?">99.9":p<=0.0005?"<0.1":(p*100).toFixed(1))+"%";
+const pr2=(p)=>p>=0.9995?"0.999+":p<=0.0005?"<0.001":p.toFixed(3);
+const sig3=(x)=>x>=1e5?(x/1e3).toFixed(0)+"k":x>=100?x.toFixed(0):x.toFixed(1);
+const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* ---------- state ---------- */
+const S={n:60,tau:25,sd:80,seed:4187,m0:0,s0:30.4,sig0:80,nu0:20,mcid:30,ctrl:320,
+         show:{prior:true,like:false,post:false}};
+const S0MIN=5,S0MAX=200;
+const s0FromSlider=(t)=>S0MIN*Math.pow(S0MAX/S0MIN,t/1000);
+const sliderFromS0=(s)=>Math.round(1000*Math.log(s/S0MIN)/Math.log(S0MAX/S0MIN));
+const NUMIN=0.2,NUMAX=200;
+const nuFromSlider=(t)=>NUMIN*Math.pow(NUMAX/NUMIN,t/600);
+const sliderFromNu=(v)=>Math.round(600*Math.log(v/NUMIN)/Math.log(NUMAX/NUMIN));
+const PRESETS=[{name:"Reference",m:0,s:200},{name:"Sceptical",m:0,s:30.4},
+               {name:"Enthusiastic",m:50,s:30.4},{name:"Previous trial",m:18,s:12}];
+
+let D=null;
+function simulate(){
+ const rng=mulberry32(S.seed*2654435761%4294967296),z=gaussFactory(rng);
+ const c=[],t=[];
+ for(let i=0;i<S.n;i++){c.push(S.ctrl+S.sd*z());t.push(S.ctrl+S.tau+S.sd*z());}
+ const K=S.ctrl,N=2*S.n;
+ let Sc=0,St=0,Syy=0;
+ for(let i=0;i<S.n;i++){const a=c[i]-K,b=t[i]-K;Sc+=a;St+=b;Syy+=a*a+b*b;}
+ const mc=Sc/S.n+K,mt=St/S.n+K;
+ let ssc=0,sst=0;
+ for(let i=0;i<S.n;i++){ssc+=(c[i]-mc)*(c[i]-mc);sst+=(t[i]-mt)*(t[i]-mt);}
+ const SSres=ssc+sst,dfp=N-2,sp2=SSres/dfp,sep=Math.sqrt(sp2*2/S.n);
+ const dhat=mt-mc,tstat=dhat/sep,pv=2*(1-pt(Math.abs(tstat),dfp)),tc=qt(0.975,dfp);
+ D={c:c,t:t,N:N,mc:mc,mt:mt,sc:Math.sqrt(ssc/(S.n-1)),st:Math.sqrt(sst/(S.n-1)),
+    seC:Math.sqrt(ssc/(S.n-1)/S.n),seT:Math.sqrt(sst/(S.n-1)/S.n),
+    Sc:Sc,St:St,Syy:Syy,SSres:SSres,dfp:dfp,sp:Math.sqrt(sp2),sep:sep,
+    dhat:dhat,tstat:tstat,p:pv,lo:dhat-tc*sep,hi:dhat+tc*sep};
+}
+
+/* Normal-inverse-gamma conjugate update on the two-group model
+   y = mu_control + delta*x + e,  e ~ N(0, sigma^2)
+   delta | sigma^2 ~ N(m0, sigma^2 * v0),  v0 = s0^2 / sig0^2
+   sigma^2 ~ Inv-Gamma(nu0/2, nu0*sig0^2/2)      (vague on the intercept) */
+function fit(m0,s0,sig0,nu0){
+ const n=S.n,N=2*n,v0=(s0*s0)/(sig0*sig0),cInt=1e8;
+ const A00=N+1/cInt,A01=n,A11=n+1/v0,det=A00*A11-A01*A01;
+ const V00=A11/det,V01=-A01/det,V11=A00/det;
+ const r0=D.Sc+D.St,r1=D.St+m0/v0;
+ const b0=V00*r0+V01*r1,b1=V01*r0+V11*r1;
+ const an=nu0/2+N/2;
+ const bn=Math.max(nu0*sig0*sig0/2+0.5*(D.Syy+m0*m0/v0-(b0*r0+b1*r1)),1e-9);
+ const df=2*an,scale=Math.sqrt(bn/an*V11);
+ const sig2mean=bn/(an-1);
+ return {m:b1,s:scale,df:df,an:an,bn:bn,
+   lo:qst(0.025,b1,scale,df),hi:qst(0.975,b1,scale,df),
+   p0:1-pst(0,b1,scale,df),pm:1-pst(S.mcid,b1,scale,df),
+   sig:Math.sqrt(sig2mean),
+   sigLo:Math.sqrt(2*bn/qchisq(0.975,df)),sigHi:Math.sqrt(2*bn/qchisq(0.025,df)),
+   wPrior:(1/v0)/(1/v0+n/2),n0:2/v0,v0:v0};
+}
+
+/* ---------- svg helpers ---------- */
+const SVG=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg>';
+const T=(x,y,s,o)=>{o=o||{};return '<text x="'+x+'" y="'+y+'" fill="'+(o.fill||"var(--ink-3)")+
+ '" font-size="'+(o.size||16)+'" font-family="'+(o.font||"var(--f-mono)")+'" text-anchor="'+(o.anchor||"start")+
+ '" font-weight="'+(o.weight||400)+'"'+(o.ls?' letter-spacing="'+o.ls+'"':'')+'>'+esc(s)+'</text>';};
+const L=(x1,y1,x2,y2,o)=>{o=o||{};return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+
+ '" stroke="'+(o.stroke||"var(--rule)")+'" stroke-width="'+(o.w||1)+'"'+
+ (o.dash?' stroke-dasharray="'+o.dash+'"':'')+(o.cap?' stroke-linecap="'+o.cap+'"':'')+'/>';};
+function niceTicks(lo,hi,target){
+ const span=hi-lo,raw=span/target,mag=Math.pow(10,Math.floor(Math.log10(raw))),n=raw/mag;
+ const step=(n<1.5?1:n<3?2:n<7?5:10)*mag;
+ const out=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step)out.push(Math.round(v*1e6)/1e6);
+ return out;}
+
+/* ---------- figure 1 ---------- */
+function drawFig1(){
+ const W=760,ml=142,mr=22,mt=20,mb=58,rowH=98;
+ const rowTop=[mt,mt+rowH+8];
+ const yAx=rowTop[1]+rowH+10,H=yAx+mb;
+ const x0=ml,x1=W-mr;
+ const all=D.c.concat(D.t);
+ let lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);
+ const pad=(hi-lo)*0.05;lo-=pad;hi+=pad;
+ const X=(v)=>x0+(v-lo)/(hi-lo)*(x1-x0);
+ const rows=[{n:"Control",lab:"usual care",d:D.c,m:D.mc,se:D.seC,col:"var(--prior)",top:rowTop[0]},
+             {n:"Treatment",lab:"programme",d:D.t,m:D.mt,se:D.seT,col:"var(--post)",top:rowTop[1]}];
+ let s="";
+ rows.forEach(function(r){s+='<rect x="'+x0+'" y="'+r.top+'" width="'+(x1-x0)+'" height="'+rowH+
+   '" fill="var(--surface-2)" rx="2"/>';});
+ niceTicks(lo,hi,6).forEach(function(v){
+   s+=L(X(v),mt,X(v),yAx,{stroke:"var(--rule)"});
+   s+=T(X(v),yAx+22,f0(v),{anchor:"middle"});});
+ s+=T(x1,yAx+44,"6-minute walk distance (m)",{anchor:"end",size:14.5,ls:"0.06em"});
+ s+=L(x0,yAx,x1,yAx,{stroke:"var(--rule-2)"});
+ rows.forEach(function(r){
+   const rng=mulberry32((S.seed+r.n.length*977)|0),dotY=r.top+32;
+   r.d.forEach(function(v){
+     const jy=dotY+(rng()-0.5)*42;
+     s+='<circle cx="'+X(v).toFixed(1)+'" cy="'+jy.toFixed(1)+'" r="3" fill="'+r.col+
+        '" fill-opacity="0.5" stroke="var(--surface-2)" stroke-width="0.7"/>';});
+   const cy=r.top+76;
+   s+=L(X(r.m-1.96*r.se),cy,X(r.m+1.96*r.se),cy,{stroke:r.col,w:2.5,cap:"round"});
+   s+=L(X(r.m),cy-9,X(r.m),cy+9,{stroke:r.col,w:4,cap:"round"});
+   s+=T(x0-16,r.top+30,r.n,{anchor:"end",fill:"var(--ink)",size:18,font:"var(--f-body)",weight:600});
+   s+=T(x0-16,r.top+53,r.lab,{anchor:"end",size:14});
+   const lx=X(r.m+1.96*r.se)+10,room=lx+76<x1;
+   s+=T(room?lx:X(r.m-1.96*r.se)-9,cy+4,"mean "+f0(r.m),
+        {anchor:room?"start":"end",fill:r.col,size:16,weight:500});});
+ document.getElementById("fig1").innerHTML=SVG(W,H,s);
+ document.querySelector("#tbl1 tbody").innerHTML=
+  [["Control",D.mc,D.sc,D.seC,"var(--prior)"],["Treatment",D.mt,D.st,D.seT,"var(--post)"]]
+  .map(function(r){return '<tr><td><i class="dot" style="background:'+r[4]+'"></i>'+r[0]+"</td><td>"+S.n+
+   "</td><td>"+f1(r[1])+" m</td><td>"+f1(r[2])+" m</td><td>"+f1(r[3])+" m</td></tr>";}).join("")+
+  '<tr><td><b>Difference</b></td><td>—</td><td colspan="3" style="text-align:right">'+sgn1(D.dhat)+
+  " m &nbsp;(SE "+f1(D.sep)+" m, <i>t</i> = "+f1(D.tstat)+" on "+D.dfp+" df, <i>p</i> = "+pr2(D.p)+")</td></tr>";
+}
+
+/* ---------- figure 2 ---------- */
+let F2=null;
+function drawFig2(){
+ const P=fit(S.m0,S.s0,S.sig0,S.nu0);
+ const W=760,ml=66,mr=22,mt=40,mb=60,H=472,yAx=H-mb,x0=ml,x1=W-mr;
+ let lo=Math.min(P.m-4*P.s,D.dhat-4*D.sep,0,S.mcid),hi=Math.max(P.m+4*P.s,D.dhat+4*D.sep,0,S.mcid);
+ const base=hi-lo;
+ if(S.m0-1.6*S.s0>lo-base)lo=Math.min(lo,S.m0-1.6*S.s0);
+ if(S.m0+1.6*S.s0<hi+base)hi=Math.max(hi,S.m0+1.6*S.s0);
+ lo-=base*0.06;hi+=base*0.06;
+ const X=(v)=>x0+(v-lo)/(hi-lo)*(x1-x0);
+ const N=340,step=(hi-lo)/N;
+ const curves=[{m:S.m0,s:S.s0,v:S.nu0,col:"var(--prior)",dash:"6 4",lab:"Prior",on:S.show.prior},
+               {m:D.dhat,s:D.sep,v:D.dfp,col:"var(--like)",dash:null,lab:"Likelihood",on:S.show.like},
+               {m:P.m,s:P.s,v:P.df,col:"var(--post)",dash:null,lab:"Posterior",on:S.show.post}];
+ let ymax=0;
+ curves.forEach(function(c){c.pts=[];for(let i=0;i<=N;i++){const x=lo+i*step,y=dst(x,c.m,c.s,c.v);
+   c.pts.push([x,y]);if(y>ymax)ymax=y;}});
+ if(ymax<=0)ymax=1;
+ ymax*=1.16;
+ const Y=(v)=>yAx-v/ymax*(yAx-mt);
+ const path=(pts)=>pts.map(function(p,i){return (i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1);}).join(" ");
+ let s="";
+ niceTicks(lo,hi,7).forEach(function(v){
+   s+=L(X(v),mt-6,X(v),yAx,{stroke:"var(--rule)"});
+   s+=T(X(v),yAx+22,f0(v),{anchor:"middle"});});
+ if(curves[2].on){
+   const shade=curves[2].pts.filter(function(p){return p[0]>=S.mcid;});
+   if(shade.length>1)s+='<path d="'+path(shade)+" L"+X(shade[shade.length-1][0]).toFixed(1)+" "+yAx+" L"+
+     X(shade[0][0]).toFixed(1)+" "+yAx+' Z" fill="var(--post-fill)"/>';
+   s+='<path d="'+path(curves[2].pts)+" L"+x1+" "+yAx+" L"+x0+" "+yAx+' Z" fill="var(--post-soft)"/>';}
+ s+=L(x0,yAx,x1,yAx,{stroke:"var(--rule-2)"});
+ s+=L(X(0),mt-16,X(0),yAx,{stroke:"var(--ink-3)",w:1.5});
+ s+=T(X(0),mt-22,"no effect",{anchor:"middle",size:15});
+ s+=L(X(S.mcid),mt-16,X(S.mcid),yAx,{stroke:"var(--ink-3)",w:1.5,dash:"3 3"});
+ s+=T(X(S.mcid),mt-22,"MCID "+f0(S.mcid)+" m",{anchor:"middle",size:15});
+ curves.forEach(function(c){if(!c.on)return;
+   s+='<path d="'+path(c.pts)+'" fill="none" stroke="'+c.col+'" stroke-width="3"'+
+   (c.dash?' stroke-dasharray="'+c.dash+'"':"")+' stroke-linejoin="round"/>';});
+ const tags=[{z:-0.95,anchor:"end",dx:-6,dy:4},{z:1.3,anchor:"start",dx:7,dy:-4},
+             {z:0,anchor:"middle",dx:0,dy:-11}];
+ curves.forEach(function(c,i){
+   if(!c.on)return;
+   const g=tags[i];let px=c.m+g.z*c.s,anchor=g.anchor,dx=g.dx;
+   if(px<lo+(hi-lo)*0.02){px=lo+(hi-lo)*0.02;anchor="start";dx=4;}
+   if(px>hi-(hi-lo)*0.02){px=hi-(hi-lo)*0.02;anchor="end";dx=-4;}
+   let ty=Y(dst(px,c.m,c.s,c.v))+g.dy;
+   if(ty<mt+16)ty=mt+16;
+   if(ty>yAx-5)ty=yAx-5;
+   s+=T(X(px)+dx,ty,c.lab,{anchor:anchor,fill:c.col,size:17,weight:600});});
+ s+=T(x1,yAx+44,"treatment effect δ = treatment − control (m)",{anchor:"end",size:14.5,ls:"0.06em"});
+ s+=T(x0-10,mt+4,"density",{size:14.5});
+ s+='<line id="cross" x1="0" y1="'+mt+'" x2="0" y2="'+yAx+'" stroke="var(--ink)" stroke-width="1" opacity="0"/>';
+ document.getElementById("fig2").innerHTML=SVG(W,H,s);
+ F2={lo:lo,hi:hi,x0:x0,x1:x1,W:W,P:P};
+ attachHover();
+}
+function attachHover(){
+ const wrap=document.getElementById("fig2wrap"),svg=wrap.querySelector("svg"),
+       tip=document.getElementById("tip2"),cross=svg.querySelector("#cross");
+ function move(e){
+   const r=svg.getBoundingClientRect(),sc=F2.W/r.width,vx=(e.clientX-r.left)*sc;
+   if(vx<F2.x0||vx>F2.x1){leave();return;}
+   const val=F2.lo+(vx-F2.x0)/(F2.x1-F2.x0)*(F2.hi-F2.lo);
+   cross.setAttribute("x1",vx);cross.setAttribute("x2",vx);cross.setAttribute("opacity","0.35");
+   tip.innerHTML="δ = "+f1(val)+" m"+(S.show.post?
+     "<br>P(effect &gt; this) = "+pr2(1-pst(val,F2.P.m,F2.P.s,F2.P.df)):"");
+   tip.style.opacity="1";
+   const wr=wrap.getBoundingClientRect();
+   let tx=e.clientX-wr.left+12;
+   if(tx+150>wr.width)tx=e.clientX-wr.left-150;
+   tip.style.left=tx+"px";tip.style.top=(e.clientY-wr.top-46)+"px";}
+ function leave(){tip.style.opacity="0";cross.setAttribute("opacity","0");}
+ svg.addEventListener("mousemove",move);svg.addEventListener("mouseleave",leave);
+}
+
+/* ---------- figure 3 ---------- */
+function drawFig3(){
+ const rows=PRESETS.map(function(p){const q=fit(p.m,p.s,S.sig0,S.nu0);
+   return {name:p.name,sub:f0(p.m)+" ± "+(Math.round(p.s*10)/10),est:q.m,lo:q.lo,hi:q.hi,p0:q.p0};});
+ const you=fit(S.m0,S.s0,S.sig0,S.nu0);
+ rows.push({name:"Your prior",sub:f0(S.m0)+" ± "+(Math.round(S.s0*10)/10),est:you.m,lo:you.lo,
+   hi:you.hi,p0:you.p0,you:true});
+ rows.push({name:"Data alone",sub:"pooled t, "+D.dfp+" df",est:D.dhat,lo:D.lo,hi:D.hi,
+   p0:1-pt(-D.dhat/D.sep,D.dfp),freq:true});
+ const W=1100,rowH=52,mt=58,mb=56,H=mt+rows.length*rowH+mb,px0=300,px1=700;
+ let lo=Math.min.apply(null,rows.map(function(r){return r.lo;}).concat([0,S.mcid])),
+     hi=Math.max.apply(null,rows.map(function(r){return r.hi;}).concat([0,S.mcid]));
+ const pad=(hi-lo)*0.08;lo-=pad;hi+=pad;
+ const X=(v)=>px0+(v-lo)/(hi-lo)*(px1-px0);
+ const yAx=mt+rows.length*rowH+8;
+ let s="";
+ niceTicks(lo,hi,5).forEach(function(v){
+   s+=L(X(v),mt-16,X(v),yAx,{stroke:"var(--rule)"});
+   s+=T(X(v),yAx+23,f0(v),{anchor:"middle"});});
+ s+=L(X(0),mt-22,X(0),yAx,{stroke:"var(--ink-3)",w:1.25});
+ s+=T(X(0),mt-33,"no effect",{anchor:"middle",size:15});
+ s+=L(X(S.mcid),mt-22,X(S.mcid),yAx,{stroke:"var(--ink-3)",w:1.25,dash:"3 3"});
+ s+=T(X(S.mcid),mt-33,"MCID",{anchor:"middle",size:15});
+ s+=T(0,mt-33,"PRIOR ON δ",{size:14,ls:"0.1em"});
+ s+=T(990,mt-33,"POSTERIOR MEAN (95% CrI)",{anchor:"end",size:14,ls:"0.1em"});
+ s+=T(1100,mt-33,"P(δ>0)",{anchor:"end",size:14,ls:"0.1em"});
+ rows.forEach(function(r,i){
+   const y=mt+i*rowH+rowH/2,col=r.freq?"var(--like)":(r.you?"var(--post)":"var(--ink-2)");
+   if(r.you)s+='<rect x="0" y="'+(y-rowH/2+2)+'" width="1100" height="'+(rowH-4)+
+     '" fill="var(--post-soft)" rx="2"/>';
+   if(r.freq)s+=L(0,y-rowH/2+1,1100,y-rowH/2+1,{stroke:"var(--rule-2)",dash:"2 3"});
+   s+=T(0,y-3,r.name,{fill:"var(--ink)",size:17,font:"var(--f-body)",weight:r.you?600:400});
+   s+=T(0,y+17,r.sub,{size:14});
+   s+=L(X(r.lo),y,X(r.hi),y,{stroke:col,w:2.6,cap:"round"});
+   s+=L(X(r.lo),y-7,X(r.lo),y+7,{stroke:col,w:2.4,cap:"round"});
+   s+=L(X(r.hi),y-7,X(r.hi),y+7,{stroke:col,w:2.4,cap:"round"});
+   s+='<circle cx="'+X(r.est).toFixed(1)+'" cy="'+y+'" r="'+(r.you?6:5)+'" fill="'+col+
+      '" stroke="var(--surface)" stroke-width="2"/>';
+   s+=T(990,y+6,sgn1(r.est)+"  ("+f1(r.lo)+" to "+f1(r.hi)+")",{anchor:"end",fill:"var(--ink-2)",size:16});
+   s+=T(1100,y+6,pr2(r.p0),{anchor:"end",fill:r.p0>=0.95?"var(--good)":"var(--ink-2)",size:16,weight:500});});
+ s+=T(px1,yAx+44,"treatment effect δ (m)",{anchor:"end",size:14.5,ls:"0.06em"});
+ document.getElementById("fig3").innerHTML=SVG(W,H,s);
+}
+
+/* ---------- readouts ---------- */
+function drawText(){
+ const P=fit(S.m0,S.s0,S.sig0,S.nu0);
+ const wp=Math.round(P.wPrior*100);
+ document.getElementById("bar-p").style.width=wp+"%";
+ document.getElementById("bar-d").style.width=(100-wp)+"%";
+ document.getElementById("w-prior").textContent="Prior "+wp+"%";
+ document.getElementById("w-data").textContent="Data "+(100-wp)+"%";
+ document.getElementById("n0-txt").innerHTML="Worth <b>"+(P.n0<0.5?"&lt;1":Math.round(P.n0))+
+  "</b> patients per arm against the trial's <b>"+S.n+"</b>.";
+ document.getElementById("ig-txt").innerHTML="Inv-Gamma("+f1(S.nu0/2)+", "+
+  sig3(S.nu0*S.sig0*S.sig0/2)+") · prior mean σ ≈ <span>"+
+  (S.nu0>2?f1(S.sig0*Math.sqrt(S.nu0/(S.nu0-2))):"∞")+" m</span>";
+
+ document.querySelectorAll(".chip").forEach(function(b){
+   b.setAttribute("aria-pressed",
+     (Math.abs(+b.dataset.m-S.m0)<0.51&&Math.abs(+b.dataset.s-S.s0)<0.31)?"true":"false");});
+}
+
+function redrawAll(){drawFig1();drawFig2();drawFig3();drawText();}
+function redrawPrior(){drawFig2();drawFig3();drawText();}
+
+/* ---------- wiring ---------- */
+function bind(id,fmt,onChange){
+ const el=document.getElementById(id),out=document.getElementById(id+"-v");
+ el.addEventListener("input",function(){out.textContent=fmt(+el.value);onChange(+el.value);});
+ out.textContent=fmt(+el.value);}
+const withSign=(v)=>(v>=0?"+":"−")+Math.abs(v)+" m";
+bind("n",function(v){return v;},function(v){S.n=v;simulate();redrawAll();});
+bind("tau",withSign,function(v){S.tau=v;simulate();redrawAll();});
+bind("sd",function(v){return v+" m";},function(v){S.sd=v;simulate();redrawAll();});
+bind("m0",withSign,function(v){S.m0=v;redrawPrior();});
+bind("sig0",function(v){return v+" m";},function(v){S.sig0=v;redrawPrior();});
+bind("mcid",function(v){return v+" m";},function(v){S.mcid=v;redrawPrior();});
+(function(){
+ const el=document.getElementById("s0"),out=document.getElementById("s0-v");
+ el.value=sliderFromS0(S.s0);
+ el.addEventListener("input",function(){S.s0=s0FromSlider(+el.value);
+   out.textContent=(Math.round(S.s0*10)/10)+" m";redrawPrior();});
+ out.textContent=(Math.round(S.s0*10)/10)+" m";})();
+(function(){
+ const el=document.getElementById("nu0"),out=document.getElementById("nu0-v");
+ el.value=sliderFromNu(S.nu0);
+ el.addEventListener("input",function(){S.nu0=nuFromSlider(+el.value);
+   out.textContent=(Math.round(S.nu0*10)/10);redrawPrior();});
+ out.textContent=(Math.round(S.nu0*10)/10);})();
+document.querySelectorAll(".chip").forEach(function(b){
+ b.addEventListener("click",function(){
+   S.m0=+b.dataset.m;S.s0=+b.dataset.s;
+   document.getElementById("m0").value=S.m0;
+   document.getElementById("m0-v").textContent=withSign(S.m0);
+   document.getElementById("s0").value=sliderFromS0(S.s0);
+   document.getElementById("s0-v").textContent=(Math.round(S.s0*10)/10)+" m";
+   redrawPrior();});});
+document.querySelectorAll(".legend input").forEach(function(cb){
+ cb.checked=S.show[cb.dataset.k];
+ cb.closest(".lgi").dataset.on=cb.checked?"1":"0";
+ cb.addEventListener("change",function(){
+   S.show[cb.dataset.k]=cb.checked;
+   cb.closest(".lgi").dataset.on=cb.checked?"1":"0";
+   drawFig2();});});
+document.getElementById("resim").addEventListener("click",function(){
+ S.seed=Math.floor(Math.random()*9000)+1000;
+ document.getElementById("seed-v").textContent=S.seed;
+ simulate();redrawAll();});
+document.getElementById("seed-v").textContent=S.seed;
+simulate();redrawAll();
+let rt;window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(drawFig2,180);});
+</script>
