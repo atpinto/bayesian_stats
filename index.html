@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore Bayesian learning through a simulated rehabilitation trial. Compare prior families and discover what the evidence says about six-minute walk distance.">
+<meta name="description" content="Explore Bayesian learning through a simulated chronic kidney disease trial. Compare prior families and discover what the evidence says about change in kidney function.">
 <meta name="color-scheme" content="light">
 <title>Priors on trial · Biostatistics in motion</title>
 <style>
@@ -23,12 +23,12 @@
 <main>
 <div class="intro">
   <div><div class="eyebrow">From assumptions to evidence</div><h1>Priors on <span>trial.</span></h1><p class="lede">See how priors shape conclusions.</p></div>
-  <div><p class="question">Can a rehabilitation programme help people walk further?</p><p class="story-copy">Adults with a chronic respiratory condition receive usual care or a 12-week rehabilitation programme. Compare their six-minute walk distances.</p></div>
+  <div><p class="question">Can a treatment slow the loss of kidney function?</p><p class="story-copy">In this hypothetical trial, adults with chronic kidney disease receive usual care alone or usual care plus a kidney-protective treatment. Compare the change in estimated glomerular filtration rate (eGFR) from baseline to 12 months.</p></div>
 </div>
 <div class="study-context" aria-label="The research question">
-  <div class="context-item"><span>Outcome</span><strong>Six-minute walk distance (m)</strong></div>
-  <div class="context-item"><span>Treatment effect · δ</span><strong>Programme − usual care</strong></div>
-  <div class="context-item"><span>Interpretation</span><strong>Positive favours the programme</strong></div>
+  <div class="context-item"><span>Outcome</span><strong>12-month eGFR change (mL/min/1.73 m²)</strong></div>
+  <div class="context-item"><span>Treatment effect · δ</span><strong>Treatment − usual care</strong></div>
+  <div class="context-item"><span>Interpretation</span><strong>Positive favours the treatment</strong></div>
 </div>
 <div class="workspace-label" id="experiment"><div class="work-caption"><h2>Your experiment</h2><p>Click a section to expand.</p></div><button class="collapse-all" id="collapse-all" hidden>Minimise all</button></div>
 <div class="stages">
@@ -38,12 +38,12 @@
     <aside class="controls data-controls" aria-label="Trial settings">
       <fieldset><legend>Trial settings</legend>
         <div class="field"><label for="n">Patients per arm <output id="n-v">60</output></label><input type="range" id="n" min="10" max="400" step="5" value="60"></div>
-        <div class="field"><label for="tau">True treatment effect <output id="tau-v">+25 m</output></label><input type="range" id="tau" min="-20" max="80" step="1" value="25"><p class="helper">Hidden from the analysis.</p></div>
-        <div class="field"><label for="sd">Patient variability · σ <output id="sd-v">80 m</output></label><input type="range" id="sd" min="30" max="130" step="1" value="80"></div>
+        <div class="field"><label for="tau">True treatment effect <output id="tau-v">+2.5 units</output></label><input type="range" id="tau" min="-2" max="8" step="0.1" value="2.5"><p class="helper">Hidden from the analysis.</p></div>
+        <div class="field"><label for="sd">Patient variability · σ <output id="sd-v">8 units</output></label><input type="range" id="sd" min="3" max="13" step="0.1" value="8"></div>
       </fieldset>
-      <fieldset><legend>New sample</legend><button class="primary full" id="resim">Draw a new trial</button><p class="protocol">Usual-care mean: 320 m<br>Random seed: <span id="seed-v">4187</span><br>Simulated data.</p></fieldset>
+      <fieldset><legend>New sample</legend><button class="primary full" id="resim">Draw a new trial</button><p class="protocol">Usual-care mean change: −4 units<br>Random seed: <span id="seed-v">4187</span><br>1 unit = 1 mL/min/1.73 m².<br>Simulated data.</p></fieldset>
     </aside>
-    <div class="visuals"><div class="plot-title"><h3>Patient outcomes</h3><span>One dot = one patient</span></div><figure><div class="plot" id="fig1"></div><figcaption class="plot-caption">Tick: mean · bar: approximate 95% CI</figcaption></figure><div class="tbl"><table id="tbl1" aria-label="Simulated trial summary"><thead><tr><th scope="col">Arm</th><th scope="col">n</th><th scope="col">Mean 6MWD</th><th scope="col">SD</th><th scope="col">SE of mean</th></tr></thead><tbody></tbody></table></div><p class="evidence-note" id="data-estimate"></p></div>
+    <div class="visuals"><div class="plot-title"><h3>Patient outcomes</h3><span>One dot = one patient</span></div><figure><div class="plot" id="fig1"></div><figcaption class="plot-caption">Tick: mean · bar: approximate 95% CI</figcaption></figure><div class="tbl"><table id="tbl1" aria-label="Simulated trial summary"><thead><tr><th scope="col">Arm</th><th scope="col">n</th><th scope="col">Mean eGFR change</th><th scope="col">SD</th><th scope="col">SE of mean</th></tr></thead><tbody></tbody></table></div><p class="evidence-note" id="data-estimate"></p></div>
   </div>
 </section>
 <section class="stage" id="priors-stage" aria-labelledby="priors-title">
@@ -52,26 +52,26 @@
     <aside class="controls prior-controls" aria-label="Prior settings">
       <fieldset><legend>Effect prior · δ</legend>
         <div class="field"><label for="family">Distribution family</label><select id="family"><option value="normal">Normal</option><option value="student">Student-t</option><option value="cauchy">Cauchy</option><option value="laplace">Laplace</option><option value="uniform">Uniform</option></select></div>
-        <div class="prior-fields"><div class="field"><label for="m0"><span id="location-label">Location</span><output id="m0-v">0 m</output></label><input type="range" id="m0" min="-80" max="120" step="1" value="0"></div>
-        <div class="field"><label for="s0"><span id="scale-label">Standard deviation</span><output id="s0-v">30.4 m</output></label><input type="range" id="s0" min="0" max="1000" step="1" value="0"></div>
+        <div class="prior-fields"><div class="field"><label for="m0"><span id="location-label">Location</span><output id="m0-v">0 units</output></label><input type="range" id="m0" min="-8" max="12" step="0.1" value="0"></div>
+        <div class="field"><label for="s0"><span id="scale-label">Standard deviation</span><output id="s0-v">3.0 units</output></label><input type="range" id="s0" min="0" max="1000" step="1" value="0"></div>
         <div class="field" id="df-field" hidden><label for="prior-df">Degrees of freedom <output id="prior-df-v">4</output></label><input type="range" id="prior-df" min="2" max="30" step="1" value="4"></div></div>
         <p class="helper" id="parameter-note"></p>
       </fieldset>
-      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-m="0" data-s="200" aria-pressed="false">Broad reference</button><button class="chip" data-m="0" data-s="30.4" aria-pressed="true">Sceptical</button><button class="chip" data-m="50" data-s="30.4" aria-pressed="false">Enthusiastic</button><button class="chip" data-m="18" data-s="12" aria-pressed="false">Previous study</button></div></fieldset>
-      <details class="mini-details"><summary>Prior on patient variability</summary><p class="helper">Shared σ² uses an inverse-gamma prior.</p><div class="field"><label for="sig0">Reference SD · σ₀ <output id="sig0-v">80 m</output></label><input type="range" id="sig0" min="30" max="130" step="1" value="80"></div><div class="field"><label for="nu0">Prior strength · ν₀ <output id="nu0-v">20</output></label><input type="range" id="nu0" min="0" max="600" step="1" value="400"></div><p class="helper">Larger ν₀ means a more concentrated prior.</p><p class="protocol" id="ig-txt"></p></details>
+      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-m="0" data-s="20" aria-pressed="false">Broad reference</button><button class="chip" data-m="0" data-s="3" aria-pressed="true">Sceptical</button><button class="chip" data-m="5" data-s="3" aria-pressed="false">Enthusiastic</button><button class="chip" data-m="1.8" data-s="1.2" aria-pressed="false">Example study</button></div></fieldset>
+      <details class="mini-details"><summary>Prior on patient variability</summary><p class="helper">Shared σ² uses an inverse-gamma prior.</p><div class="field"><label for="sig0">Reference SD · σ₀ <output id="sig0-v">8 units</output></label><input type="range" id="sig0" min="3" max="13" step="0.1" value="8"></div><div class="field"><label for="nu0">Prior strength · ν₀ <output id="nu0-v">20</output></label><input type="range" id="nu0" min="0" max="600" step="1" value="400"></div><p class="helper">Larger ν₀ means a more concentrated prior.</p><p class="protocol" id="ig-txt"></p></details>
     </aside>
-    <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><span id="prior-family-name">Normal prior</span></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the programme’s effect on mean walk distance.</figcaption></figure><div class="metrics"><div class="metric"><span>Prior centre</span><strong id="prior-centre"></strong><small>Median treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>Metres of treatment effect</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div><p class="callout" id="prior-reading"></p><p class="helper">Equal scales do not imply equal spread across families.</p></div>
+    <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><span id="prior-family-name">Normal prior</span></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the treatment effect on mean eGFR change.</figcaption></figure><div class="metrics"><div class="metric"><span>Prior centre</span><strong id="prior-centre"></strong><small>Median treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>eGFR units of treatment effect</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div><p class="callout" id="prior-reading"></p><p class="helper">All starting beliefs are illustrative. Equal scales do not imply equal spread across families.</p></div>
   </div>
 </section>
 <section class="stage" id="results-stage" aria-labelledby="results-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="false" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">+17.3 m</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
+  <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="false" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">+1.7 units</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
   <div class="stage-body" id="results-body" hidden>
-    <aside class="controls results-controls" aria-label="Results settings"><fieldset><legend>Benefit threshold</legend><div class="field"><label for="mcid">Meaningful benefit <output id="mcid-v">30 m</output></label><input type="range" id="mcid" min="0" max="70" step="1" value="30"><p class="helper">30 m is illustrative; choose a threshold for your context.</p></div></fieldset><fieldset><legend>Show on the plot</legend><label class="check"><input type="checkbox" data-k="prior" checked><i class="sw prior" aria-hidden="true"></i>Prior</label><label class="check"><input type="checkbox" data-k="like" checked><i class="sw like" aria-hidden="true"></i>Likelihood</label><label class="check"><input type="checkbox" data-k="post" checked><i class="sw" aria-hidden="true"></i>Posterior</label></fieldset><p class="protocol" id="analysis-recap"></p></aside>
+    <aside class="controls results-controls" aria-label="Results settings"><fieldset><legend>Benefit threshold</legend><div class="field"><label for="mcid">Meaningful benefit <output id="mcid-v">3 units</output></label><input type="range" id="mcid" min="0" max="7" step="0.1" value="3"><p class="helper">3 eGFR units is an illustrative threshold for this simulation; choose a threshold for your context.</p></div></fieldset><fieldset><legend>Show on the plot</legend><label class="check"><input type="checkbox" data-k="prior" checked><i class="sw prior" aria-hidden="true"></i>Prior</label><label class="check"><input type="checkbox" data-k="like" checked><i class="sw like" aria-hidden="true"></i>Likelihood</label><label class="check"><input type="checkbox" data-k="post" checked><i class="sw" aria-hidden="true"></i>Posterior</label></fieldset><p class="protocol" id="analysis-recap"></p></aside>
     <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><span id="posterior-family"></span></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></details></div>
   </div>
 </section>
 </div>
-<details class="methods"><summary>How this simulation works</summary><p>The outcome is six-minute walk distance after 12 weeks. The two groups are simulated from normal distributions with a shared SD, a usual-care mean of 320 m, and a treatment mean of 320 m + δ. Larger distances mean better walking capacity. The normal sampling model is a teaching simplification.</p><p>The chosen effect prior is independent of the variance prior: <span class="formula">p(δ, σ²) = p(δ) × p(σ²)</span>, with <span class="formula">σ² ~ Inv-Gamma(ν₀/2, ν₀σ₀²/2)</span>, using the shape/scale parameterisation. The control-group mean has a flat prior. Integrating out the control mean and σ² gives <span class="formula">L(δ) ∝ [ν₀σ₀² + SSwithin + (n/2)(δ − d)²]^−(ν₀ + 2n − 1)/2</span>, where d is the observed difference and n is patients per arm.</p><p>The posterior is calculated by numerical integration of this likelihood times the selected effect prior. The likelihood curve is normalised over δ for display and uses the variance prior when integrating out σ². The posterior is generally not a member of the selected prior family. The data-only comparison instead reports the usual pooled two-sample t confidence interval; it has no posterior probability. All Bayesian intervals are equal-tailed 95% credible intervals.</p><p>Normal scale is its SD; Student-t and Cauchy scale are scale parameters; Laplace scale is b (SD = √2 b); uniform scale is its half-width. Student-t has a finite SD only above 2 degrees of freedom; the Cauchy has neither a finite mean nor a finite variance. Compare families thoughtfully: matching their scales does not match their prior information.</p></details>
+<details class="methods"><summary>How this simulation works</summary><p>The outcome is change in eGFR from baseline to 12 months, in mL/min/1.73 m² (shown as “units” throughout). <a href="https://www.niddk.nih.gov/health-information/professionals/clinical-tools-patient-management/kidney-disease/laboratory-evaluation/estimated-gfr-calculators">eGFR estimates how well the kidneys filter blood.</a> Negative changes indicate a decline; a more positive change means better preservation of kidney function. The two groups are simulated from normal distributions with a shared SD, a usual-care mean change of −4 units, and a treatment mean change of −4 + δ units. Thus, a positive δ can represent slower decline, even if both groups lose kidney function. The treatment, values, prior beliefs and benefit threshold are hypothetical teaching choices. The normal sampling model is a teaching simplification.</p><p>The chosen effect prior is independent of the variance prior: <span class="formula">p(δ, σ²) = p(δ) × p(σ²)</span>, with <span class="formula">σ² ~ Inv-Gamma(ν₀/2, ν₀σ₀²/2)</span>, using the shape/scale parameterisation. The control-group mean has a flat prior. Integrating out the control mean and σ² gives <span class="formula">L(δ) ∝ [ν₀σ₀² + SSwithin + (n/2)(δ − d)²]^−(ν₀ + 2n − 1)/2</span>, where d is the observed difference and n is patients per arm.</p><p>The posterior is calculated by numerical integration of this likelihood times the selected effect prior. The likelihood curve is normalised over δ for display and uses the variance prior when integrating out σ². The posterior is generally not a member of the selected prior family. The data-only comparison instead reports the usual pooled two-sample t confidence interval; it has no posterior probability. All Bayesian intervals are equal-tailed 95% credible intervals.</p><p>Normal scale is its SD; Student-t and Cauchy scale are scale parameters; Laplace scale is b (SD = √2 b); uniform scale is its half-width. Student-t has a finite SD only above 2 degrees of freedom; the Cauchy has neither a finite mean nor a finite variance. Compare families thoughtfully: matching their scales does not match their prior information.</p></details>
 <footer class="footer"><p>Developed by <a href="https://profiles.sydney.edu.au/armando.teixeira-pinto">Armando Teixeira-Pinto</a> and Codex.</p><p>Simulated data · Built for exploration and teaching</p></footer>
 </main>
 <dialog class="focus-dialog" id="focus-dialog" aria-label="Focused experiment section"></dialog>
@@ -131,16 +131,16 @@ const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g
 
 /* Independent effect and variance priors. All effect families use the same
    variance-integrated likelihood; no normal approximation is substituted. */
-const S={n:60,tau:25,sd:80,seed:4187,m0:0,s0:30.4,sig0:80,nu0:20,mcid:30,ctrl:320,
+const S={n:60,tau:2.5,sd:8,seed:4187,m0:0,s0:3,sig0:8,nu0:20,mcid:3,ctrl:-4,
  family:'normal',priorDf:4,show:{prior:true,like:true,post:true}};
-const S0MIN=5,S0MAX=200;
+const S0MIN=.5,S0MAX=20;
 const s0FromSlider=t=>S0MIN*Math.pow(S0MAX/S0MIN,t/1000);
 const sliderFromS0=s=>Math.round(1000*Math.log(s/S0MIN)/Math.log(S0MAX/S0MIN));
 const NUMIN=.2,NUMAX=200;
 const nuFromSlider=t=>NUMIN*Math.pow(NUMAX/NUMIN,t/600);
 const sliderFromNu=v=>Math.round(600*Math.log(v/NUMIN)/Math.log(NUMAX/NUMIN));
-const PRESETS=[{name:'Broad reference',m:0,s:200},{name:'Sceptical',m:0,s:30.4},
- {name:'Enthusiastic',m:50,s:30.4},{name:'Previous study',m:18,s:12}];
+const PRESETS=[{name:'Broad reference',m:0,s:20},{name:'Sceptical',m:0,s:3},
+ {name:'Enthusiastic',m:5,s:3},{name:'Example study',m:1.8,s:1.2}];
 const FAMILY_NAMES={normal:'Normal',student:'Student-t',cauchy:'Cauchy',laplace:'Laplace',uniform:'Uniform'};
 let D=null;
 const fitCache=new Map();
@@ -266,14 +266,14 @@ function drawFig1(){
  const pad=(hi-lo)*0.05;lo-=pad;hi+=pad;
  const X=(v)=>x0+(v-lo)/(hi-lo)*(x1-x0);
  const rows=[{n:"Control",lab:"usual care",d:D.c,m:D.mc,se:D.seC,col:"var(--blue)",top:rowTop[0]},
-             {n:"Treatment",lab:"programme",d:D.t,m:D.mt,se:D.seT,col:"var(--post)",top:rowTop[1]}];
+             {n:"Treatment",lab:"add-on therapy",d:D.t,m:D.mt,se:D.seT,col:"var(--post)",top:rowTop[1]}];
  let s="";
  rows.forEach(function(r){s+='<rect x="'+x0+'" y="'+r.top+'" width="'+(x1-x0)+'" height="'+rowH+
    '" fill="var(--surface-2)" rx="2"/>';});
  niceTicks(lo,hi,W<500?3:6).forEach(function(v){
    s+=L(X(v),mt,X(v),yAx,{stroke:"var(--rule)"});
-   s+=T(X(v),yAx+22,f0(v),{anchor:"middle"});});
- s+=T(x1,yAx+44,"6-minute walk distance (m)",{anchor:"end",size:14.5,ls:"0.06em"});
+   s+=T(X(v),yAx+22,MIN(v),{anchor:"middle"});});
+ s+=T(x1,yAx+44,"12-month eGFR change (units)",{anchor:"end",size:14.5,ls:"0.06em"});
  s+=L(x0,yAx,x1,yAx,{stroke:"var(--rule-2)"});
  rows.forEach(function(r){
    const rng=mulberry32((S.seed+r.n.length*977)|0),dotY=r.top+32;
@@ -287,21 +287,21 @@ function drawFig1(){
    s+=T(x0-16,r.top+30,r.n,{anchor:"end",fill:"var(--ink)",size:W<500?14:18,font:"var(--f-body)",weight:600});
    s+=T(x0-16,r.top+53,r.lab,{anchor:"end",size:W<500?12:14});
    const lx=X(r.m+1.96*r.se)+10,room=lx+76<x1;
-   s+=T(room?lx:X(r.m-1.96*r.se)-9,cy+4,"mean "+f0(r.m),
+   s+=T(room?lx:X(r.m-1.96*r.se)-9,cy+4,"mean "+f1(r.m),
         {anchor:room?"start":"end",fill:r.col,size:16,weight:500});});
  document.getElementById("fig1").innerHTML=SVG(W,H,s);
  document.querySelector("#tbl1 tbody").innerHTML=
   [["Control",D.mc,D.sc,D.seC,"var(--blue)"],["Treatment",D.mt,D.st,D.seT,"var(--post)"]]
   .map(function(r){return '<tr><td><i class="dot" style="background:'+r[4]+'"></i>'+r[0]+"</td><td>"+S.n+
-   "</td><td>"+f1(r[1])+" m</td><td>"+f1(r[2])+" m</td><td>"+f1(r[3])+" m</td></tr>";}).join("")+
+   "</td><td>"+f1(r[1])+" units</td><td>"+f1(r[2])+" units</td><td>"+f1(r[3])+" units</td></tr>";}).join("")+
   '<tr><td><b>Difference</b></td><td>—</td><td colspan="3" style="text-align:right">'+sgn1(D.dhat)+
-  " m &nbsp;(SE "+f1(D.sep)+" m, <i>t</i> = "+f1(D.tstat)+" on "+D.dfp+" df, <i>p</i> = "+pr2(D.p)+")</td></tr>";
+  " units &nbsp;(SE "+f1(D.sep)+" units, <i>t</i> = "+f1(D.tstat)+" on "+D.dfp+" df, <i>p</i> = "+pr2(D.p)+")</td></tr>";
 }
 
 
 const $=id=>document.getElementById(id);
-const withSign=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(Number.isInteger(v)?0:1)+' m';
-const metres=v=>f1(v)+' m';
+const withSign=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(Number.isInteger(v)?0:1)+' units';
+const egfrUnits=v=>f1(v)+' units';
 let activeStage=null,focusedStage=null,focusPlaceholder=null,returnFocus=null,F2=null;
 const stageIds=['data','priors','results'];
 
@@ -334,13 +334,13 @@ function drawDensityPlot(id,mode){
  const Y=v=>yAx-v/ymax*(yAx-mt);
  const path=points=>points.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(2)+','+Y(p[1]).toFixed(2)).join(' ');
  let out='<title>'+esc(priorOnly?'Prior on the treatment effect':'Prior, likelihood and posterior for the treatment effect')+'</title>';
- out+='<desc>'+esc(priorOnly?FAMILY_NAMES[S.family]+' prior centred at '+S.m0+' metres.':'Posterior mean '+f1(P.m)+' metres, 95% credible interval '+f1(P.lo)+' to '+f1(P.hi)+' metres.')+'</desc>';
+ out+='<desc>'+esc(priorOnly?FAMILY_NAMES[S.family]+' prior centred at '+S.m0+' units.':'Posterior mean '+f1(P.m)+' units, 95% credible interval '+f1(P.lo)+' to '+f1(P.hi)+' units.')+'</desc>';
  for(let i=0;i<=3;i++){
   const value=ymax*i/3,y=Y(value);
   out+=L(x0,y,x1,y,{stroke:'var(--line)'});
   out+=T(x0-8,y+4,value===0?'0':value.toFixed(ymax<.1?3:2),{anchor:'end',size:W<500?11:12});
  }
- for(const v of niceTicks(lo,hi,W<500?4:7))out+=T(X(v),yAx+21,f0(v),{anchor:'middle',size:13});
+ for(const v of niceTicks(lo,hi,W<500?4:7))out+=T(X(v),yAx+21,MIN(v),{anchor:'middle',size:13});
  const fillCurve=priorOnly?curves[0]:curves[2];
  if(fillCurve.on){
   const start=priorOnly?lo:Math.max(lo,S.mcid),end=hi;
@@ -351,12 +351,12 @@ function drawDensityPlot(id,mode){
  out+=T(Math.max(x0+28,Math.min(x1-28,X(0))),22,'No effect',{anchor:'middle',size:12});
  if(!priorOnly){
   out+=L(X(S.mcid),mt-7,X(S.mcid),yAx,{stroke:'var(--ink-3)',dash:'3 4'});
-  out+=T(Math.max(x0+42,Math.min(x1-43,X(S.mcid))),39,'Threshold '+S.mcid+' m',{anchor:'middle',size:12});
+  out+=T(Math.max(x0+42,Math.min(x1-43,X(S.mcid))),39,'Threshold '+S.mcid+' units',{anchor:'middle',size:12});
  }
  for(const c of curves)if(c.on)out+='<path d="'+path(c.points)+'" fill="none" stroke="'+c.colour+'" stroke-width="2.6"'+(c.dash?' stroke-dasharray="'+c.dash+'"':'')+' stroke-linejoin="round"/>';
  if(!curves.some(c=>c.on))out+=T((x0+x1)/2,(mt+yAx)/2,'Select a curve to explore.',{anchor:'middle',size:16,fill:'var(--ink-2)'});
  out+=L(x0,yAx,x1,yAx,{stroke:'var(--rule-2)'});
- out+=T((x0+x1)/2,H-12,'Treatment effect δ (metres)',{anchor:'middle',size:13});
+ out+=T((x0+x1)/2,H-12,'Effect on eGFR change δ (units)',{anchor:'middle',size:13});
  out+=T(x0,mt-8,'Density',{size:11});
  if(!priorOnly)out+='<line id="cross" x1="0" x2="0" y1="'+mt+'" y2="'+yAx+'" stroke="var(--ink)" opacity="0"/>';
  $(id).innerHTML=SVG(W,H,out);
@@ -368,7 +368,7 @@ function attachHover(){
   const rect=svg.getBoundingClientRect(),vx=(event.clientX-rect.left)*F2.W/rect.width;
   if(vx<F2.x0||vx>F2.x1){tip.style.opacity='0';cross.setAttribute('opacity','0');return}
   const value=F2.lo+(vx-F2.x0)/(F2.x1-F2.x0)*(F2.hi-F2.lo);
-  tip.textContent='δ = '+metres(value)+(S.show.post?' · P(δ > this) = '+pct(1-F2.P.cdf(value)):'');
+  tip.textContent='δ = '+egfrUnits(value)+(S.show.post?' · P(δ > this) = '+pct(1-F2.P.cdf(value)):'');
   tip.style.opacity='1';cross.setAttribute('x1',vx);cross.setAttribute('x2',vx);cross.setAttribute('opacity','.35');
   const bounds=wrap.getBoundingClientRect();
   tip.style.left=Math.max(0,Math.min(bounds.width-tip.offsetWidth,event.clientX-bounds.left+12))+'px';
@@ -381,7 +381,7 @@ function comparisonRows(){
  const beliefs=$('comparison-mode').value==='beliefs';
  const rows=(beliefs?PRESETS.map(p=>({...p,family:S.family})):Object.keys(FAMILY_NAMES).map(family=>({name:FAMILY_NAMES[family],m:S.m0,s:S.s0,family}))).map(p=>{
   const result=fit(p.m,p.s,S.sig0,S.nu0,p.family,S.priorDf);
-  return {name:p.name,sub:beliefs?withSign(p.m)+' · scale '+f1(p.s)+' m':p.family==='student'?S.priorDf+' degrees of freedom':'',est:result.m,lo:result.lo,hi:result.hi,p0:1-result.cdf(0),you:!beliefs&&p.family===S.family};
+  return {name:p.name,sub:beliefs?withSign(p.m)+' · scale '+f1(p.s)+' units':p.family==='student'?S.priorDf+' degrees of freedom':'',est:result.m,lo:result.lo,hi:result.hi,p0:1-result.cdf(0),you:!beliefs&&p.family===S.family};
  });
  if(beliefs){const q=fit();rows.push({name:'Your prior',sub:FAMILY_NAMES[S.family],est:q.m,lo:q.lo,hi:q.hi,p0:1-q.cdf(0),you:true})}
  rows.push({name:'Data only',sub:'Pooled t confidence interval',est:D.dhat,lo:D.lo,hi:D.hi,p0:null,freq:true});return rows;
@@ -394,10 +394,10 @@ function drawComparison(){
  const pad=(hi-lo)*.09;lo-=pad;hi+=pad;
  const X=v=>x0+(v-lo)/(hi-lo)*(x1-x0),yAx=mt+rows.length*rowH;
  let out='<title>Posterior sensitivity to the prior</title><desc>Each row shows a mean and 95% interval. The same values are available in the table below.</desc>';
- for(const v of niceTicks(lo,hi,5))out+=L(X(v),mt-8,X(v),yAx)+T(X(v),yAx+22,f0(v),{anchor:'middle',size:13});
+ for(const v of niceTicks(lo,hi,5))out+=L(X(v),mt-8,X(v),yAx)+T(X(v),yAx+22,MIN(v),{anchor:'middle',size:13});
  out+=L(X(0),mt-12,X(0),yAx,{stroke:'var(--ink-3)'});
  out+=L(X(S.mcid),mt-12,X(S.mcid),yAx,{stroke:'var(--ink-3)',dash:'3 4'});
- out+=T(0,20,'Prior assumption',{size:14})+T(900,20,'Mean (95% interval), m',{anchor:'end',size:14})+T(1000,20,'P(δ > 0)',{anchor:'end',size:13});
+ out+=T(0,20,'Prior assumption',{size:14})+T(900,20,'Mean (95% interval), units',{anchor:'end',size:14})+T(1000,20,'P(δ > 0)',{anchor:'end',size:13});
  rows.forEach((r,i)=>{
   const y=mt+i*rowH+rowH/2,colour=r.you?'var(--post)':r.freq?'var(--like)':'var(--ink-2)';
   if(r.you)out+='<rect x="0" y="'+(y-rowH/2+2)+'" width="1000" height="'+(rowH-4)+'" fill="var(--post-soft)" rx="3"/>';
@@ -410,9 +410,9 @@ function drawComparison(){
   out+=T(900,y+5,sgn1(r.est)+' ('+f1(r.lo)+' to '+f1(r.hi)+')',{anchor:'end',size:14});
   out+=T(1000,y+5,r.p0===null?'—':pct(r.p0),{anchor:'end',size:14});
  });
- out+=T((x0+x1)/2,H-8,'Treatment effect δ (metres)',{anchor:'middle',size:13});
+ out+=T((x0+x1)/2,H-8,'Effect on eGFR change δ (units)',{anchor:'middle',size:13});
  $('fig3').innerHTML=SVG(W,H,out);
- $('comparison-table').querySelector('tbody').innerHTML=rows.map(r=>'<tr'+(r.you?' style="background:var(--post-soft)"':'')+'><td>'+esc(r.name+(r.you?' · selected':''))+'</td><td>'+sgn1(r.est)+' m</td><td>'+f1(r.lo)+' to '+f1(r.hi)+' m'+(r.freq?' (CI)':' (CrI)')+'</td><td>'+(r.p0===null?'—':pct(r.p0))+'</td></tr>').join('');
+ $('comparison-table').querySelector('tbody').innerHTML=rows.map(r=>'<tr'+(r.you?' style="background:var(--post-soft)"':'')+'><td>'+esc(r.name+(r.you?' · selected':''))+'</td><td>'+sgn1(r.est)+' units</td><td>'+f1(r.lo)+' to '+f1(r.hi)+' units'+(r.freq?' (CI)':' (CrI)')+'</td><td>'+(r.p0===null?'—':pct(r.p0))+'</td></tr>').join('');
 }
 
 const familyDescriptions={
@@ -426,40 +426,40 @@ function drawReadouts(){
  const P=fit(),name=FAMILY_NAMES[S.family],p0=1-P.cdf(0),pm=1-P.cdf(S.mcid);
  $('data-summary').textContent=S.n+' per arm';
  $('priors-summary').textContent=name;
- $('results-summary').textContent=sgn1(P.m)+' m';
- $('data-estimate').textContent='Difference: '+sgn1(D.dhat)+' m (95% CI '+f1(D.lo)+' to '+f1(D.hi)+' m).';
+ $('results-summary').textContent=sgn1(P.m)+' units';
+ $('data-estimate').textContent='Difference: '+sgn1(D.dhat)+' units (95% CI '+f1(D.lo)+' to '+f1(D.hi)+' units).';
  $('location-label').textContent=S.family==='uniform'?'Centre':'Location';
  $('scale-label').textContent=S.family==='normal'?'Standard deviation':S.family==='laplace'?'Scale · b':S.family==='uniform'?'Half-width':'Scale';
  $('df-field').hidden=S.family!=='student';
- $('parameter-note').textContent=S.family==='uniform'?'Bounds: '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' m. Zero probability outside.':S.family==='normal'?'About 95% of prior probability lies within 1.96 SDs of the centre.':S.family==='student'?'Scale is not the SD. At '+S.priorDf+' degrees of freedom, '+(S.priorDf>2?'SD = '+f1(S.s0*Math.sqrt(S.priorDf/(S.priorDf-2)))+' m.':'the prior SD is infinite.'):S.family==='cauchy'?'Half the prior probability lies within one scale of the centre.':'Prior SD = '+f1(Math.SQRT2*S.s0)+' m.';
+ $('parameter-note').textContent=S.family==='uniform'?'Bounds: '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' units. Zero probability outside.':S.family==='normal'?'About 95% of prior probability lies within 1.96 SDs of the centre.':S.family==='student'?'Scale is not the SD. At '+S.priorDf+' degrees of freedom, '+(S.priorDf>2?'SD = '+f1(S.s0*Math.sqrt(S.priorDf/(S.priorDf-2)))+' units.':'the prior SD is infinite.'):S.family==='cauchy'?'Half the prior probability lies within one scale of the centre.':'Prior SD = '+f1(Math.SQRT2*S.s0)+' units.';
  $('prior-explanation').textContent=familyDescriptions[S.family];
  $('prior-family-name').textContent=name+' prior'+(S.family==='student'?' · '+S.priorDf+' df':'');
  $('prior-plot-note').textContent=S.family==='uniform'?'Zero density outside the bounds.':'Tails extend beyond the plot.';
  $('prior-centre').textContent=withSign(S.m0);
- $('prior-interval').textContent=f0(priorQuantile(.025))+' to '+f0(priorQuantile(.975));
+ $('prior-interval').textContent=f1(priorQuantile(.025))+' to '+f1(priorQuantile(.975));
  $('prior-prob').textContent=pct(1-priorCDF(0));
- $('prior-reading').textContent='Prior P(δ > '+S.mcid+' m): '+pct(1-priorCDF(S.mcid))+'.';
+ $('prior-reading').textContent='Prior P(δ > '+S.mcid+' units): '+pct(1-priorCDF(S.mcid))+'.';
  $('ig-txt').textContent='Inv-Gamma(shape '+f1(S.nu0/2)+', scale '+sig3(S.nu0*S.sig0*S.sig0/2)+').';
  $('posterior-family').textContent=name+' prior';
- $('posterior-mean').textContent=sgn1(P.m)+' m';
- $('posterior-interval').textContent='95% CrI: '+f1(P.lo)+' to '+f1(P.hi)+' m';
+ $('posterior-mean').textContent=sgn1(P.m)+' units';
+ $('posterior-interval').textContent='95% CrI: '+f1(P.lo)+' to '+f1(P.hi)+' units';
  $('posterior-p0').textContent=pct(p0);$('posterior-pm').textContent=pct(pm);
- $('posterior-threshold').textContent='Probability that δ > '+S.mcid+' m';
- $('analysis-recap').textContent=name+' · centre '+f1(S.m0)+' m · '+(S.family==='normal'?'SD':S.family==='uniform'?'half-width':'scale')+' '+f1(S.s0)+' m. σ₀ '+S.sig0+' m; ν₀ '+f1(S.nu0)+'.';
+ $('posterior-threshold').textContent='Probability that δ > '+S.mcid+' units';
+ $('analysis-recap').textContent=name+' · centre '+f1(S.m0)+' units · '+(S.family==='normal'?'SD':S.family==='uniform'?'half-width':'scale')+' '+f1(S.s0)+' units. σ₀ '+S.sig0+' units; ν₀ '+f1(S.nu0)+'.';
  $('result-reading').hidden=S.family!=='uniform';
- $('result-reading').textContent='Effects outside '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' m remain excluded.';
- document.querySelectorAll('.chip').forEach(button=>button.setAttribute('aria-pressed',String(Math.abs(+button.dataset.m-S.m0)<.51&&Math.abs(+button.dataset.s-S.s0)<.31)));
+ $('result-reading').textContent='Effects outside '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' units remain excluded.';
+ document.querySelectorAll('.chip').forEach(button=>button.setAttribute('aria-pressed',String(Math.abs(+button.dataset.m-S.m0)<.051&&Math.abs(+button.dataset.s-S.s0)<.031)));
  for(const id of ['n','tau','sd','m0','s0','sig0','nu0','mcid','prior-df']){
   const input=$(id),output=$(id+'-v');
   const value=id==='s0'?S.s0:id==='nu0'?S.nu0:id==='prior-df'?S.priorDf:S[id];
-  output.textContent=['tau','m0'].includes(id)?withSign(value):['sd','sig0','mcid'].includes(id)?value+' m':id==='s0'?f1(value)+' m':id==='nu0'?f1(value):value;
+  output.textContent=['tau','m0'].includes(id)?withSign(value):['sd','sig0','mcid'].includes(id)?value+' units':id==='s0'?f1(value)+' units':id==='nu0'?f1(value):value;
   input.setAttribute('aria-valuetext',output.textContent);
  }
  $('seed-v').textContent=S.seed;
 }
 function renderActive(){
  if(activeStage==='data'){
-  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Simulated six-minute walk distances in the control and programme groups. Group summaries appear in the table below.');
+  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Simulated 12-month changes in eGFR in the usual-care and add-on treatment groups. Group summaries appear in the table below.');
  }else if(activeStage==='priors')drawDensityPlot('prior-plot','prior');
  else if(activeStage==='results'){drawDensityPlot('fig2','result');if($('sensitivity').open)drawComparison()}
 }
