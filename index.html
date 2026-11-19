@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore Bayesian learning through a simulated kidney transplantation trial. Compare prior families and discover what the evidence says about change in kidney function.">
+<meta name="description" content="Explore Bayesian learning through a simulated kidney transplantation trial inspired by published research. Compare prior families and discover what the evidence says about change in kidney function.">
 <meta name="color-scheme" content="light">
 <title>Priors on trial · Biostatistics in motion</title>
 <style>
@@ -14,6 +14,117 @@
 @media(max-width:1050px){.intro{gap:24px 32px}.stage-toggle{grid-template-columns:120px 1fr auto;gap:16px;padding:16px 20px}.stage-header{padding-right:18px;gap:4px}.stage-body{grid-template-columns:250px minmax(0,1fr)}.controls{padding:20px}.visuals{padding:22px 20px}.metric strong{font-size:25px}.metric+.metric{padding-left:15px}.plot-title{align-items:start}.plot-title span{max-width:23ch;text-align:right}}
 @media(max-width:760px){.masthead{padding:15px 18px}.masthead small{display:none}main{padding:25px 16px 20px}.intro{grid-template-columns:1fr;gap:18px;margin-bottom:22px}h1{letter-spacing:-1.5px;margin-bottom:10px}.question{font-size:21px;max-width:100%}.study-context{grid-template-columns:1fr;margin-bottom:24px}.context-item,.context-item+.context-item{border-left:0;padding:10px 0;display:grid;grid-template-columns:90px 1fr;gap:10px}.context-item+.context-item{border-top:1px solid var(--line)}.context-item span{margin:0}.workspace-label{align-items:start}.workspace-label p{max-width:28ch;font-size:15px}.work-caption{align-items:start;flex-direction:column;gap:5px}.stage-toggle{grid-template-columns:90px minmax(0,1fr) auto;gap:8px;padding:14px 16px}.stage-title{font-size:20px}.stage-summary{font-size:15px}.toggle-word{font-size:15px}.stage-header{padding-right:13px;gap:0}.focus-button{padding:8px 10px;font-size:15px}.stage-body,.focus-dialog .stage-body{grid-template-columns:1fr}.controls{border-right:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:22px}.controls fieldset{margin:0;padding:0;border:0}.controls .mini-details{grid-column:1/-1}.prior-controls fieldset,.results-controls fieldset{grid-column:1/-1}.prior-controls .prior-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.prior-controls .prior-fields .field{margin:0}.visuals{padding:20px 16px}.plot-title{flex-direction:column;gap:5px}.plot-title span{max-width:100%;text-align:left}.metrics{gap:0}.metric{padding:12px 10px 12px 0}.metric+.metric{padding-left:11px}.metric strong{font-size:24px}.metric span,.metric small{font-size:14px}.footer{flex-direction:column;gap:8px}.focus-dialog{width:calc(100vw - 20px);max-height:calc(100dvh - 20px)}.comparison-head{align-items:start;flex-direction:column;gap:7px}.comparison-head select{max-width:none}.reading{font-size:16px}}
 @media(max-width:430px){.controls{grid-template-columns:1fr}.prior-controls .prior-fields{grid-template-columns:1fr}.data-controls fieldset+fieldset{border-top:1px solid var(--line);padding-top:20px}.stage-toggle{column-gap:8px;padding-right:11px}.stage-title{font-size:19px}.stage-header{padding-right:11px}.toggle-word{font-size:14px;padding:6px 8px}.focus-button{font-size:14px;padding:9px}.metric strong{font-size:21px}.metric small{font-size:14px}.plot svg{min-height:170px}.study-context strong{font-size:16px}}
+.clinical-context{margin:0 0 26px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px;color:var(--ink-2)}
+.clinical-context summary{cursor:pointer;font-weight:600;font-size:18px}
+.clinical-context p{max-width:105ch;margin:14px 0 0}
+.clinical-context a{color:var(--accent)}
+.projection-preset{display:none}
+/* Focus mode uses the available projection canvas; ordinary page layout is unchanged. */
+.focus-dialog{inset:0;margin:0;width:100vw;max-width:none;height:100dvh;max-height:none;border-radius:0;background:var(--paper)}
+.focus-dialog .stage{height:100%;display:flex;flex-direction:column;background:var(--paper)}
+.focus-dialog .stage-header{position:static;flex:none;padding-right:24px;background:var(--white)}
+.focus-dialog .stage-title{font-size:30px}
+.focus-dialog .stage-summary,.focus-dialog .focus-button{font-size:22px}
+.focus-dialog .toggle-word{display:none}
+.focus-dialog .stage-toggle{grid-template-columns:150px 1fr;padding:14px 24px}
+.focus-dialog .stage-body{display:flex;flex-direction:column;flex:1;min-height:0}
+.focus-dialog .controls{flex:none;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;padding:16px 24px;border-right:0;border-bottom:1px solid var(--line)}
+.focus-dialog fieldset{padding:0;margin:0;border:0;min-width:0}
+.focus-dialog legend{font-size:22px;margin-bottom:8px}
+.focus-dialog .field{margin:0;min-width:0}
+.focus-dialog .field label{font-size:22px;line-height:1.25;display:block;margin-bottom:2px}
+.focus-dialog .field output{display:block;font-size:24px;color:var(--accent);margin-top:3px}
+.focus-dialog input[type=range]{height:28px}
+.focus-dialog select,.focus-dialog .primary{font-size:22px;padding:9px 12px}
+.focus-dialog select{padding-right:32px}
+.focus-dialog .helper,.focus-dialog .protocol{font-size:18px;line-height:1.35;margin-top:6px}
+.focus-dialog .data-controls fieldset:first-child{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.focus-dialog .data-controls fieldset:first-child legend{grid-column:1/-1}
+.focus-dialog .data-controls .helper{display:none}
+.focus-dialog .data-controls .protocol{font-size:18px;line-height:1.3}
+.focus-dialog .visuals{display:flex;flex-direction:column;flex:1;min-height:0;gap:8px;padding:14px 24px}
+.focus-dialog .plot-title{flex:none;margin:0;flex-direction:row;align-items:baseline}
+.focus-dialog .plot-title h3{font-size:26px}
+.focus-dialog .plot-title span,.focus-dialog .reading,.focus-dialog .plot-caption{font-size:20px;max-width:none}
+.focus-dialog .reading,.focus-dialog .plot-caption{margin:0;line-height:1.3}
+.focus-dialog figure{display:flex;flex-direction:column;flex:1;min-height:0;gap:4px}
+.focus-dialog .plot,.focus-dialog #fig2{flex:1;min-height:0}
+.focus-dialog .plot svg,.focus-dialog #fig2 svg{width:100%;height:100%;min-height:0}
+.focus-dialog .tipwrap{display:flex;flex-direction:column}
+.focus-dialog .evidence-note{flex:none;font-size:23px;margin:0;line-height:1.35}
+.focus-dialog .metrics{flex:none;margin:0}
+.focus-dialog .metric{padding:8px 14px 8px 0}
+.focus-dialog .metric+.metric{padding-left:18px}
+.focus-dialog .metric span,.focus-dialog .metric small{font-size:19px;line-height:1.3}
+.focus-dialog .metric strong{font-size:34px}
+.focus-dialog .prior-controls{grid-template-columns:minmax(0,1fr) 260px;position:relative}
+.focus-dialog .prior-controls fieldset{grid-column:auto}
+.focus-dialog .prior-controls fieldset:first-child{display:grid;grid-template-columns:1fr 2fr;gap:8px 20px}
+.focus-dialog .prior-controls fieldset:first-child legend{grid-column:1/-1}
+.focus-dialog .prior-fields{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.focus-dialog #parameter-note{grid-column:1/-1;margin:0;max-width:65ch}
+.focus-dialog .chips{display:none}
+.focus-dialog .projection-preset{display:block}
+.focus-dialog .prior-controls>.mini-details{position:absolute;right:24px;top:110px;width:260px;border:0;font-size:19px;padding-top:8px}
+.focus-dialog .prior-controls>.mini-details[open]{top:110px;width:min(650px,calc(100% - 48px));border:1px solid var(--rule-2)}
+.focus-dialog .chip{font-size:20px;padding:8px 10px}
+.focus-dialog .mini-details{grid-column:1/-1;padding-top:8px;font-size:20px}
+.focus-dialog .mini-details[open]{position:absolute;z-index:20;top:calc(100% - 36px);right:24px;width:min(650px,calc(100% - 48px));padding:18px 22px;border:1px solid var(--rule-2);background:var(--white);box-shadow:0 8px 25px #191b1820}
+.focus-dialog .mini-details[open] .field{display:inline-block;width:48%;vertical-align:top;margin-top:8px}
+.focus-dialog .mini-details[open] summary{margin-bottom:8px}
+.focus-dialog .results-controls{grid-template-columns:minmax(0,1fr) auto;gap:30px}
+.focus-dialog .results-controls fieldset{grid-column:auto}
+.focus-dialog .results-controls fieldset:first-child .field{display:grid;grid-template-columns:minmax(200px,1fr) minmax(150px,1fr);gap:0 20px;align-items:center}
+.focus-dialog .results-controls .helper{grid-column:1/-1}
+.focus-dialog .results-controls fieldset:last-child{display:grid;grid-template-columns:repeat(3,auto);gap:0 18px;align-content:start}
+.focus-dialog .results-controls fieldset:last-child legend{grid-column:1/-1}
+.focus-dialog .check{font-size:22px;margin:9px 0}
+.focus-dialog .check input{width:22px;height:22px}
+.focus-dialog .callout{flex:none;margin:0;font-size:20px}
+.focus-dialog .comparison{flex:none;margin:0;padding-top:4px}
+.focus-dialog .comparison>summary{font-size:22px}
+.focus-dialog #results-stage:has(#sensitivity[open]) .visuals>.plot-title,
+.focus-dialog #results-stage:has(#sensitivity[open]) .visuals>.metrics,
+.focus-dialog #results-stage:has(#sensitivity[open]) .visuals>figure,
+.focus-dialog #results-stage:has(#sensitivity[open]) .visuals>.callout{display:none}
+.focus-dialog .comparison[open]{flex:1;min-height:0;position:relative;border:0}
+.focus-dialog .comparison[open] .comparison-content{position:absolute;inset:46px 0 0;display:flex;flex-direction:column;gap:8px;min-height:0}
+.focus-dialog .comparison-head{margin:0;flex-direction:row;align-items:center}
+.focus-dialog .comparison-head label{font-size:22px}
+.focus-dialog .comparison-head select{max-width:320px;font-size:22px}
+.focus-dialog .forest{flex:1;min-height:0;margin:0;overflow:visible}
+.focus-dialog .forest svg{width:100%;height:100%;min-width:0}
+.focus-dialog .comparison-table{display:none}
+@media(min-width:900px) and (min-height:600px){.focus-dialog{overflow:hidden}}
+@media(min-width:1400px) and (min-height:850px){
+ .focus-dialog .field label,.focus-dialog legend,.focus-dialog .check{font-size:26px}
+ .focus-dialog .field output{font-size:28px}
+ .focus-dialog .stage-title{font-size:36px}
+ .focus-dialog .plot-title h3{font-size:30px}
+ .focus-dialog .metric span,.focus-dialog .metric small{font-size:23px}
+ .focus-dialog .metric strong{font-size:42px}
+}
+@media(max-width:899px),(max-height:599px){
+ .focus-dialog{overflow:auto}.focus-dialog .stage{height:auto;min-height:100%}
+ .focus-dialog .controls,.focus-dialog .prior-controls,.focus-dialog .results-controls{grid-template-columns:1fr}
+ .focus-dialog .data-controls fieldset:first-child{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .focus-dialog .visuals{flex:none;min-height:480px}
+ .focus-dialog figure{flex:none;min-height:320px}
+ .focus-dialog .plot svg,.focus-dialog #fig2 svg{height:auto}
+ .focus-dialog .forest svg{height:auto;min-height:350px}
+ .focus-dialog .comparison[open]{min-height:520px}
+ .focus-dialog .comparison[open] .comparison-content{position:static}
+ .focus-dialog .prior-controls>.mini-details,.focus-dialog .prior-controls>.mini-details[open]{position:static;width:auto;box-shadow:none}
+}
+@media(max-width:600px){
+ .focus-dialog .controls,.focus-dialog .visuals{padding:16px}
+ .focus-dialog .data-controls fieldset:first-child,.focus-dialog .prior-controls fieldset:first-child,.focus-dialog .prior-fields{display:block}
+ .focus-dialog .field{margin-bottom:16px}
+ .focus-dialog .stage-toggle{grid-template-columns:1fr;padding:12px 16px;gap:4px}
+ .focus-dialog .stage-title{font-size:26px}.focus-dialog .stage-summary{font-size:20px}
+ .focus-dialog .plot-title{flex-direction:column;gap:0}
+ .focus-dialog .results-controls fieldset:first-child .field{display:block}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -23,13 +134,19 @@
 <main>
 <div class="intro">
   <div><div class="eyebrow">From assumptions to evidence</div><h1>Priors on <span>trial.</span></h1><p class="lede">See how priors shape conclusions.</p></div>
-  <div><p class="question">Can a treatment better preserve kidney transplant function?</p><p class="story-copy">In this hypothetical trial, adult kidney transplant recipients receive standard care alone or with an add-on treatment. Compare change in estimated glomerular filtration rate (eGFR) over 12 months.</p></div>
+  <div><p class="question">Can changing treatment better preserve kidney transplant function?</p><p class="story-copy">A real trial asked whether switching immunosuppression could improve kidney function. Explore that question with simulated 12-month changes in estimated glomerular filtration rate (eGFR).</p></div>
 </div>
 <div class="study-context" aria-label="The research question">
   <div class="context-item"><span>Outcome</span><strong>12-month eGFR change (mL/min/1.73 m²)</strong></div>
   <div class="context-item"><span>Treatment effect · δ</span><strong>Treatment − standard care</strong></div>
   <div class="context-item"><span>Interpretation</span><strong>Positive favours the treatment</strong></div>
 </div>
+<details class="clinical-context">
+  <summary>The clinical motivation: benefit, uncertainty, and the prior</summary>
+  <p>Rostaing and colleagues randomised 173 stable kidney transplant recipients to switch from a calcineurin inhibitor to belatacept or continue their existing regimen. At 12 months after randomisation, mean calculated GFR had increased by 7.0 units with belatacept and 2.1 units with continued treatment: an observed difference of 4.9 units. Acute rejection occurred in six versus no patients. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3052236/" target="_blank" rel="noopener">Read the trial (CJASN, 2011)</a>.</p>
+  <p><strong>How likely is any benefit? How likely is a benefit large enough to matter?</strong> Those are different questions. Compare a sceptical prior with an enthusiastic one, then move the benefit threshold. Three units is illustrative; five units is another discussion threshold, motivated by <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8365649/" target="_blank" rel="noopener">research on 12-month eGFR in deceased donor transplantation</a>. Its relevance to a treatment-switching population needs clinical judgement.</p>
+  <p>The <strong>Earlier trial</strong> preset uses the observed 4.9-unit difference as its centre, with an illustrative scale of 2.5 units to allow more uncertainty when moving to a new study. Under a Normal prior, this scale is the standard deviation; it has a different meaning for the other families. The patient observations below are simulated, and the settings do not reconstruct the published trial. The prior represents earlier evidence for a new hypothetical trial. Kidney function is one part of the clinical decision; rejection and other outcomes also matter.</p>
+</details>
 <div class="workspace-label" id="experiment"><div class="work-caption"><h2>Your experiment</h2><p>Click a section to expand.</p></div><button class="collapse-all" id="collapse-all" hidden>Minimise all</button></div>
 <div class="stages">
 <section class="stage" id="data-stage" aria-labelledby="data-title">
@@ -57,7 +174,7 @@
         </div>
         <p class="helper" id="parameter-note"></p>
       </fieldset>
-      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-m="0" data-s="20" aria-pressed="false">Broad reference</button><button class="chip" data-m="0" data-s="3" aria-pressed="true">Sceptical</button><button class="chip" data-m="5" data-s="3" aria-pressed="false">Enthusiastic</button><button class="chip" data-m="1.8" data-s="1.2" aria-pressed="false">Example study</button></div></fieldset>
+      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-m="0" data-s="20" aria-pressed="false">Broad reference</button><button class="chip" data-m="0" data-s="3" aria-pressed="true">Sceptical</button><button class="chip" data-m="5" data-s="3" aria-pressed="false">Enthusiastic</button><button class="chip" data-m="4.9" data-s="2.5" aria-pressed="false">Earlier trial</button></div><div class="projection-preset"><select id="focus-preset" aria-label="Starting belief"><option value="">Your custom prior</option><option value="0">Broad reference</option><option value="1" selected>Sceptical</option><option value="2">Enthusiastic</option><option value="3">Earlier trial</option></select></div></fieldset>
       <details class="mini-details"><summary>Prior on patient variability</summary><p class="helper">Shared σ² uses an inverse-gamma prior.</p><div class="field"><label for="sig0">Reference SD · σ₀ <output id="sig0-v">8 units</output></label><input type="range" id="sig0" min="3" max="13" step="0.1" value="8"></div><div class="field"><label for="nu0">Prior strength · ν₀ <output id="nu0-v">20</output></label><input type="range" id="nu0" min="0" max="600" step="1" value="400"></div><p class="helper">Larger ν₀ means a more concentrated prior.</p><p class="protocol" id="ig-txt"></p></details>
     </aside>
     <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><span id="prior-family-name">Normal prior</span></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the treatment effect on mean eGFR change.</figcaption></figure><div class="metrics"><div class="metric"><span id="prior-centre-label">Prior mean</span><strong id="prior-centre"></strong><small id="prior-centre-note">Expected treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>eGFR units of treatment effect</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div></div>
@@ -67,7 +184,7 @@
   <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="false" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">+1.7 units</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
   <div class="stage-body" id="results-body" hidden>
     <aside class="controls results-controls" aria-label="Results settings"><fieldset><legend>Benefit threshold</legend><div class="field"><label for="mcid">Meaningful benefit <output id="mcid-v">3 units</output></label><input type="range" id="mcid" min="0" max="7" step="0.1" value="3"><p class="helper">3 eGFR units is an illustrative threshold for this simulation; choose a threshold for your context.</p></div></fieldset><fieldset><legend>Show on the plot</legend><label class="check"><input type="checkbox" data-k="prior" checked><i class="sw prior" aria-hidden="true"></i>Prior</label><label class="check"><input type="checkbox" data-k="like" checked><i class="sw like" aria-hidden="true"></i>Likelihood</label><label class="check"><input type="checkbox" data-k="post" checked><i class="sw" aria-hidden="true"></i>Posterior</label></fieldset></aside>
-    <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><span id="posterior-family"></span></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></details></div>
+    <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><span id="posterior-family"></span></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-content"><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></div></details></div>
   </div>
 </section>
 </div>
@@ -139,7 +256,7 @@ const NUMIN=.2,NUMAX=200;
 const nuFromSlider=t=>NUMIN*Math.pow(NUMAX/NUMIN,t/600);
 const sliderFromNu=v=>Math.round(600*Math.log(v/NUMIN)/Math.log(NUMAX/NUMIN));
 const PRESETS=[{name:'Broad reference',m:0,s:20},{name:'Sceptical',m:0,s:3},
- {name:'Enthusiastic',m:5,s:3},{name:'Example study',m:1.8,s:1.2}];
+ {name:'Enthusiastic',m:5,s:3},{name:'Earlier trial',m:4.9,s:2.5}];
 const FAMILY_NAMES={normal:'Normal',cauchy:'Cauchy',laplace:'Laplace',uniform:'Uniform'};
 let D=null;
 const fitCache=new Map();
@@ -239,8 +356,8 @@ function simulate(){
 
 /* ---------- svg helpers ---------- */
 const SVG=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg>';
-const T=(x,y,s,o)=>{o=o||{};return '<text x="'+x+'" y="'+y+'" fill="'+(o.fill||"var(--ink-3)")+
- '" font-size="'+(o.size||16)+'" font-family="'+(o.font||"var(--f-mono)")+'" text-anchor="'+(o.anchor||"start")+
+const T=(x,y,s,o)=>{o=o||{};const size=projectionMode()?Math.max(o.size||16,window.innerWidth>=1400&&window.innerHeight>=850?26:22):(o.size||16);return '<text x="'+x+'" y="'+y+'" fill="'+(o.fill||"var(--ink-3)")+
+ '" font-size="'+size+'" font-family="'+(o.font||"var(--f-mono)")+'" text-anchor="'+(o.anchor||"start")+
  '" font-weight="'+(o.weight||400)+'"'+(o.ls?' letter-spacing="'+o.ls+'"':'')+'>'+esc(s)+'</text>';};
 const L=(x1,y1,x2,y2,o)=>{o=o||{};return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+
  '" stroke="'+(o.stroke||"var(--rule)")+'" stroke-width="'+(o.w||1)+'"'+
@@ -253,16 +370,17 @@ function niceTicks(lo,hi,target){
 
 /* ---------- figure 1 ---------- */
 function drawFig1(){
- const W=chartWidth("fig1"),ml=W<500?120:156,mr=18,mt=20,mb=88,rowH=108;
+ const W=chartWidth("fig1"),ml=projectionMode()?(W>=1400?270:230):W<500?120:156,mr=18,mt=20,mb=88;
+ const H=chartHeight('fig1',342),rowH=projectionMode()?(H-mt-mb-18)/2:108;
  const rowTop=[mt,mt+rowH+8];
- const yAx=rowTop[1]+rowH+10,H=yAx+mb;
+ const yAx=rowTop[1]+rowH+10;
  const x0=ml,x1=W-mr;
  const all=D.c.concat(D.t);
  let lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);
  const pad=(hi-lo)*0.05;lo-=pad;hi+=pad;
  const X=(v)=>x0+(v-lo)/(hi-lo)*(x1-x0);
  const rows=[{n:"Control",lab:"standard care",d:D.c,m:D.mc,se:D.seC,col:"var(--blue)",top:rowTop[0]},
-             {n:"Treatment",lab:"add-on therapy",d:D.t,m:D.mt,se:D.seT,col:"var(--post)",top:rowTop[1]}];
+             {n:"Treatment",lab:"alternative regimen",d:D.t,m:D.mt,se:D.seT,col:"var(--post)",top:rowTop[1]}];
  let s="";
  rows.forEach(function(r){s+='<rect x="'+x0+'" y="'+r.top+'" width="'+(x1-x0)+'" height="'+rowH+
    '" fill="var(--surface-2)" rx="2"/>';});
@@ -273,12 +391,12 @@ function drawFig1(){
  s+=T((x0+x1)/2,yAx+74,"(mL/min/1.73 m²)",{anchor:"middle",size:16});
  s+=L(x0,yAx,x1,yAx,{stroke:"var(--rule-2)"});
  rows.forEach(function(r){
-   const rng=mulberry32((S.seed+r.n.length*977)|0),dotY=r.top+32;
+   const rng=mulberry32((S.seed+r.n.length*977)|0),dotY=r.top+rowH*.30;
    r.d.forEach(function(v){
      const jy=dotY+(rng()-0.5)*42;
      s+='<circle cx="'+X(v).toFixed(1)+'" cy="'+jy.toFixed(1)+'" r="3" fill="'+r.col+
         '" fill-opacity="0.5" stroke="var(--surface-2)" stroke-width="0.7"/>';});
-   const cy=r.top+76;
+   const cy=r.top+rowH*.72;
    s+=L(X(r.m-1.96*r.se),cy,X(r.m+1.96*r.se),cy,{stroke:r.col,w:2.5,cap:"round"});
    s+=L(X(r.m),cy-9,X(r.m),cy+9,{stroke:r.col,w:4,cap:"round"});
    s+=T(x0-16,r.top+30,r.n,{anchor:"end",fill:"var(--ink)",size:W<500?16:22,font:"var(--f-body)",weight:600});
@@ -297,15 +415,17 @@ const egfrUnits=v=>f1(v)+' units';
 let activeStage=null,focusedStage=null,focusPlaceholder=null,returnFocus=null,F2=null;
 const stageIds=['data','priors','results'];
 
-function chartWidth(id){return Math.max(320,Math.min(1000,$(id).clientWidth||760))}
+function projectionMode(){return !!document.querySelector('.focus-dialog[open]')&&window.innerWidth>=900&&window.innerHeight>=600}
+function chartWidth(id){const width=$(id).clientWidth||760;return Math.max(320,projectionMode()?width:Math.min(1000,width))}
+function chartHeight(id,fallback){return projectionMode()?Math.max(150,$(id).clientHeight):fallback}
 function curvePoints(lo,hi,fn,extra=[]){
  const points=Array.from({length:601},(_,i)=>lo+(hi-lo)*i/600);
  for(const x of extra)if(x>lo&&x<hi)points.push(x);
  points.sort((a,b)=>a-b);return points.map(x=>[x,fn(x)]);
 }
 function drawDensityPlot(id,mode){
- const priorOnly=mode==='prior',P=fit(),like=P.like,W=chartWidth(id),H=W<500?340:380;
- const x0=W<450?65:80,x1=W-18,mt=64,yAx=H-84;
+ const priorOnly=mode==='prior',P=fit(),like=P.like,W=chartWidth(id),H=chartHeight(id,W<500?340:380);
+ const x0=W<450?65:80,x1=W-18,mt=projectionMode()&&priorOnly?34:64,yAx=H-(projectionMode()?75:84);
  let lo,hi;
  if(priorOnly){
   const half=S.family==='uniform'?S.s0*1.2:S.s0*4;
@@ -382,26 +502,27 @@ function comparisonRows(){
 function drawComparison(){
  const rows=comparisonRows(),beliefs=$('comparison-mode').value==='beliefs';
  $('comparison-note').textContent=beliefs?FAMILY_NAMES[S.family]+' priors with different '+(S.family==='cauchy'?'locations':'means')+' and scales. Same trial.':'Same centre and scale; different spreads and tails. Same trial.';
- const W=1000,rowH=60,mt=45,H=mt+rows.length*rowH+84,x0=235,x1=690;
+ const W=projectionMode()?chartWidth('fig3'):1000,mt=45,H=chartHeight('fig3',mt+rows.length*60+84);
+ const rowH=(H-mt-84)/rows.length,x0=W*.235,x1=W*.66;
  let lo=Math.min(0,S.mcid,...rows.map(r=>r.lo)),hi=Math.max(0,S.mcid,...rows.map(r=>r.hi));
  const pad=(hi-lo)*.09;lo-=pad;hi+=pad;
  const X=v=>x0+(v-lo)/(hi-lo)*(x1-x0),yAx=mt+rows.length*rowH;
- let out='<title>Posterior sensitivity to the prior</title><desc>Each row shows a mean and 95% interval. The same values are available in the table below.</desc>';
+ let out='<title>Posterior sensitivity to the prior</title><desc>Each row shows a mean and 95% interval.'+(projectionMode()?'':' The same values are available in the table below.')+'</desc>';
  for(const v of niceTicks(lo,hi,5))out+=L(X(v),mt-8,X(v),yAx)+T(X(v),yAx+22,MIN(v),{anchor:'middle',size:15});
  out+=L(X(0),mt-12,X(0),yAx,{stroke:'var(--ink-3)'});
  out+=L(X(S.mcid),mt-12,X(S.mcid),yAx,{stroke:'var(--ink-3)',dash:'3 4'});
- out+=T(0,20,'Prior assumption',{size:16})+T(900,20,'Mean (95% interval)',{anchor:'end',size:16})+T(1000,20,'P(δ > 0)',{anchor:'end',size:15});
+ out+=T(0,20,'Prior assumption',{size:16})+T(W*.90,20,'Mean (95% interval)',{anchor:'end',size:16})+T(W,20,'P(δ > 0)',{anchor:'end',size:15});
  rows.forEach((r,i)=>{
   const y=mt+i*rowH+rowH/2,colour=r.you?'var(--post)':r.freq?'var(--like)':'var(--ink-2)';
-  if(r.you)out+='<rect x="0" y="'+(y-rowH/2+2)+'" width="1000" height="'+(rowH-4)+'" fill="var(--post-soft)" rx="3"/>';
-  if(r.freq)out+=L(0,y-rowH/2,1000,y-rowH/2,{dash:'3 4'});
+  if(r.you)out+='<rect x="0" y="'+(y-rowH/2+2)+'" width="'+W+'" height="'+(rowH-4)+'" fill="var(--post-soft)" rx="3"/>';
+  if(r.freq)out+=L(0,y-rowH/2,W,y-rowH/2,{dash:'3 4'});
   out+=T(8,y-2,r.name+(r.you?' · selected':''),{fill:'var(--ink)',size:18,weight:r.you?600:400});
-  out+=T(8,y+16,r.sub,{size:14});
+  if(!projectionMode())out+=T(8,y+16,r.sub,{size:14});
   out+=L(X(r.lo),y,X(r.hi),y,{stroke:colour,w:2.5});
   for(const v of [r.lo,r.hi])out+=L(X(v),y-5,X(v),y+5,{stroke:colour,w:2});
   out+='<circle cx="'+X(r.est)+'" cy="'+y+'" r="4" fill="'+colour+'"/>';
-  out+=T(900,y+5,sgn1(r.est)+' ('+f1(r.lo)+' to '+f1(r.hi)+')',{anchor:'end',size:16});
-  out+=T(1000,y+5,r.p0===null?'—':pct(r.p0),{anchor:'end',size:16});
+  out+=T(W*.90,y+5,sgn1(r.est)+' ('+f1(r.lo)+' to '+f1(r.hi)+')',{anchor:'end',size:16});
+  out+=T(W,y+5,r.p0===null?'—':pct(r.p0),{anchor:'end',size:16});
  });
  out+=T((x0+x1)/2,H-38,'Effect on eGFR change δ',{anchor:'middle',size:18});
  out+=T((x0+x1)/2,H-12,'(mL/min/1.73 m²)',{anchor:'middle',size:18});
@@ -441,6 +562,8 @@ function drawReadouts(){
  $('result-reading').hidden=S.family!=='uniform';
  $('result-reading').textContent='Effects outside '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' units remain excluded.';
  document.querySelectorAll('.chip').forEach(button=>button.setAttribute('aria-pressed',String(Math.abs(+button.dataset.m-S.m0)<.051&&Math.abs(+button.dataset.s-S.s0)<.031)));
+ const presetIndex=PRESETS.findIndex(p=>Math.abs(p.m-S.m0)<.051&&Math.abs(p.s-S.s0)<.031);
+ $('focus-preset').value=presetIndex<0?'':String(presetIndex);
  for(const id of ['n','tau','sd','m0','s0','sig0','nu0','mcid']){
   const input=$(id),output=$(id+'-v');
   const value=id==='s0'?S.s0:id==='nu0'?S.nu0:S[id];
@@ -451,7 +574,7 @@ function drawReadouts(){
 }
 function renderActive(){
  if(activeStage==='data'){
-  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Simulated 12-month changes in eGFR in the standard-care and add-on treatment groups. The difference between groups appears below.');
+  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Simulated 12-month changes in eGFR in the standard-care and alternative treatment groups. The difference between groups appears below.');
  }else if(activeStage==='priors')drawDensityPlot('prior-plot','prior');
  else if(activeStage==='results'){drawDensityPlot('fig2','result');if($('sensitivity').open)drawComparison()}
 }
@@ -500,12 +623,17 @@ $('s0').value=sliderFromS0(S.s0);$('nu0').value=sliderFromNu(S.nu0);
 $('s0').addEventListener('input',()=>{S.s0=s0FromSlider(+$('s0').value);fitCache.clear();redraw()});
 $('nu0').addEventListener('input',()=>{S.nu0=nuFromSlider(+$('nu0').value);fitCache.clear();redraw()});
 $('family').addEventListener('change',()=>{S.family=$('family').value;fitCache.clear();redraw()});
+$('focus-preset').addEventListener('change',()=>{
+ if($('focus-preset').value==='')return;
+ const preset=PRESETS[+$('focus-preset').value];
+ S.m0=preset.m;S.s0=preset.s;$('m0').value=S.m0;$('s0').value=sliderFromS0(S.s0);fitCache.clear();redraw();
+});
 document.querySelectorAll('.chip').forEach(button=>button.addEventListener('click',()=>{
  S.m0=+button.dataset.m;S.s0=+button.dataset.s;$('m0').value=S.m0;$('s0').value=sliderFromS0(S.s0);fitCache.clear();redraw();
 }));
 document.querySelectorAll('.check input[data-k]').forEach(input=>input.addEventListener('change',()=>{S.show[input.dataset.k]=input.checked;renderActive()}));
 $('comparison-mode').addEventListener('change',drawComparison);
-$('sensitivity').addEventListener('toggle',()=>{if($('sensitivity').open)drawComparison()});
+$('sensitivity').addEventListener('toggle',()=>{if($('sensitivity').open)requestAnimationFrame(drawComparison)});
 $('resim').addEventListener('click',()=>{S.seed=(S.seed+1+Math.floor(Math.random()*8999))%100000;simulate();redraw()});
 let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(renderActive,120)});
 simulate();redraw();
@@ -513,3 +641,4 @@ simulate();redraw();
 </script>
 </body>
 </html>
+
