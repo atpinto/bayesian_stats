@@ -20,7 +20,7 @@
 .clinical-context a{color:var(--accent)}
 .projection-preset{display:none}
 /* Focus mode uses the available projection canvas; ordinary page layout is unchanged. */
-.focus-dialog{inset:0;margin:0;width:100vw;max-width:none;height:100dvh;max-height:none;border-radius:0;background:var(--paper)}
+.focus-dialog{inset:0;margin:auto;width:80vw;max-width:none;height:80dvh;max-height:none;border-radius:10px;background:var(--paper);box-shadow:0 20px 60px #191b1840}
 .focus-dialog .stage{height:100%;display:flex;flex-direction:column;background:var(--paper)}
 .focus-dialog .stage-header{position:static;flex:none;padding-right:24px;background:var(--white)}
 .focus-dialog .stage-title{font-size:30px}
@@ -96,7 +96,7 @@
 .focus-dialog .forest svg{width:100%;height:100%;min-width:0}
 .focus-dialog .comparison-table{display:none}
 @media(min-width:900px) and (min-height:600px){.focus-dialog{overflow:hidden}}
-@media(min-width:1400px) and (min-height:850px){
+@media(min-width:1750px) and (min-height:1060px){
  .focus-dialog .field label,.focus-dialog legend,.focus-dialog .check{font-size:26px}
  .focus-dialog .field output{font-size:28px}
  .focus-dialog .stage-title{font-size:36px}
@@ -125,6 +125,17 @@
  .focus-dialog .plot-title{flex-direction:column;gap:0}
  .focus-dialog .results-controls fieldset:first-child .field{display:block}
 }
+/* Settings sit behind a button so each section opens on its figure. */
+.stage-body.hide-controls{grid-template-columns:minmax(0,1fr)!important}.stage-body.hide-controls>.controls{display:none!important}
+.plot-tools{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end}
+.settings-toggle{font-size:15px;padding:7px 12px;border-color:#d9b9ac;background:#fff6ef;color:#8d3322;font-weight:600}.settings-toggle:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.legend-people{display:flex;align-items:center;gap:14px;font-size:15px;color:var(--muted)}.legend-people span{display:inline-flex;align-items:center;gap:6px}.legend-people svg{width:14px;height:20px}
+.link-button{border:0;background:none;padding:0;margin-left:10px;font-size:15px;color:var(--accent);text-decoration:underline;text-underline-offset:3px;font-weight:600}.link-button:hover{background:none;color:#8d3322}
+.freq{display:block;font-size:16px;color:var(--muted);margin-top:6px}
+.trial-figure{margin:18px 0 0;max-width:640px}.trial-figure svg{width:100%;height:auto;display:block}
+.clinical-context .kidney-art{float:right;width:190px;margin:10px 0 10px 28px}.clinical-context .kidney-art svg{width:100%;height:auto}
+.clinical-context .looks-art{margin:16px 0 4px;max-width:620px}.clinical-context .looks-art svg{width:100%;height:auto}.clinical-context:after{content:"";display:block;clear:both}
+@media(max-width:760px){.clinical-context .kidney-art{width:120px}.plot-tools{justify-content:flex-start}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -134,7 +145,15 @@
 <main>
 <div class="intro">
   <div><div class="eyebrow">From assumptions to evidence</div><h1>Priors on <span>trial.</span></h1><p class="lede">See how priors shape conclusions.</p></div>
-  <div><p class="question">Does a new therapy clear BK viraemia after kidney transplant?</p><p class="story-copy">Kidney recipients with BK viraemia receive standard care (reduced immunosuppression), with or without a hypothetical new therapy. This is the example from the explainer video <em>Bayesian trials, explained with BK virus</em>.</p></div>
+  <div><p class="question">Does a new therapy clear BK viraemia after kidney transplant?</p><p class="story-copy">Kidney recipients with BK viraemia receive standard care (reduced immunosuppression), with or without a hypothetical new therapy. This is the example from the explainer video <em>Bayesian trials, explained with BK virus</em>.</p><figure class="trial-figure" aria-label="Trial design: kidney recipients with BK viraemia are randomised to standard care or standard care plus a new therapy; the outcome is viral clearance at 12 weeks."><svg viewBox="-12 0 672 150" role="img">
+<g transform="translate(22 40)" fill="var(--accent)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(41 40)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(60 40)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(79 40)" fill="var(--accent)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(22 68)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(41 68)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(60 68)" fill="var(--accent)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(79 68)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(22 96)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(41 96)" fill="var(--accent)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(60 96)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><g transform="translate(79 96)" fill="var(--ink-2)"><circle cy="-9" r="5"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z"/></g><text x="50" y="128" font-size="12" fill="var(--muted)" text-anchor="middle" font-family="Arial">Recipients with</text><text x="50" y="143" font-size="12" fill="var(--muted)" text-anchor="middle" font-family="Arial">BK viraemia</text>
+<path d="M104 75h40" stroke="var(--ink)" stroke-width="2"/><circle cx="164" cy="75" r="18" fill="var(--ink)"/><text x="164" y="81" font-size="17" font-weight="700" fill="#fff" text-anchor="middle" font-family="Arial">R</text>
+<path d="M180 66l40-28M180 84l40 28" stroke="var(--ink)" stroke-width="2"/>
+<rect x="222" y="14" width="210" height="48" rx="7" fill="#fff" stroke="var(--blue)" stroke-width="2"/><text x="236" y="35" font-size="15" font-weight="700" fill="var(--blue)" font-family="Arial">Standard care</text><text x="236" y="53" font-size="12" fill="var(--muted)" font-family="Arial">reduce immunosuppression</text>
+<rect x="222" y="88" width="210" height="48" rx="7" fill="#fff" stroke="var(--accent)" stroke-width="2"/><text x="236" y="109" font-size="15" font-weight="700" fill="var(--accent)" font-family="Arial">+ new therapy</text><text x="236" y="127" font-size="12" fill="var(--muted)" font-family="Arial">hypothetical agent</text>
+<path d="M434 38l40 28M434 112l40-28" stroke="var(--ink)" stroke-width="2"/>
+<rect x="478" y="44" width="180" height="62" rx="8" fill="var(--ink)"/><text x="492" y="66" font-size="11" font-weight="700" fill="#d8d8cf" letter-spacing="1.5" font-family="Arial">OUTCOME</text><text x="492" y="88" font-size="15" font-weight="700" fill="#fff" font-family="Arial">Clearance at 12 weeks</text>
+</svg></figure></div>
 </div>
 <div class="study-context" aria-label="The research question">
   <div class="context-item"><span>Outcome</span><strong>BK viral clearance at 12 weeks</strong></div>
@@ -143,15 +162,20 @@
 </div>
 <details class="clinical-context">
   <summary>The clinical motivation: BK virus, few patients, and the prior</summary>
+  <figure class="kidney-art" aria-hidden="true"><svg viewBox="-260 -270 500 610"><path d="M-95 30C-170 70-150 230-190 330" stroke="#c99a8b" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M-95-30L-250-60" stroke="var(--accent)" stroke-width="18" stroke-linecap="round"/><path d="M-95 0L-250 10" stroke="var(--blue)" stroke-width="18" stroke-linecap="round"/><path d="M0-250C170-262 232-120 222 0C232 140 160 262 0 250C-130 244-172 150-118 72C-86 30-86-30-118-72C-172-150-130-244 0-250Z" fill="#e8c2b3" stroke="#a8553f" stroke-width="6"/><g transform="translate(60 -150) rotate(10)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(120 -60) rotate(25)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(40 30) rotate(5)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(140 60) rotate(40)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(90 150) rotate(15)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(-10 -90) rotate(30)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(170 -120) rotate(0)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g><g transform="translate(20 110) rotate(20)"><path d="M14 0L7 12H-7L-14 0L-7-12H7Z" fill="rgba(180,67,43,.22)" stroke="var(--accent)" stroke-width="2.2"/><circle r="3" fill="var(--accent)"/></g></svg></figure>
   <p>BK polyomavirus viraemia is common in the first year after kidney transplantation. It can progress to BK nephropathy and graft loss, and there is no proven antiviral therapy, so reducing immunosuppression remains standard care. Trials are small, which is where a Bayesian design helps: it combines earlier evidence with the accumulating data and answers the question clinicians ask: <strong>given the data, how likely is it that the therapy works?</strong></p>
-  <p>The <strong>Video prior</strong> gives each arm a Beta(8, 12) prior: about 40% clearance on standard care, worth about 20 patients, and deliberately sceptical, with no benefit assumed. Compare it with other priors on the treatment effect, then move the benefit threshold. A gain of 10 percentage points is the illustrative "meaningful" threshold used in the video.</p>
+  <p>The <strong>Video prior (sceptical)</strong> gives each arm a Beta(8, 12) prior: about 40% clearance on standard care, worth about 20 patients, and deliberately sceptical, with no benefit assumed. Compare it with other priors on the treatment effect, then move the benefit threshold. A gain of 10 percentage points is the illustrative "meaningful" threshold used in the video.</p>
   <p>The video's pre-specified rules look at 20 and 40 patients per arm: stop for success if P(δ &gt; 0) &gt; 97.5%, and for futility if P(δ &gt; 10 points) &lt; 10%. The trial and every number are hypothetical, for teaching.</p>
+  <figure class="looks-art" aria-label="Interim looks at 20 and 40 patients per arm, with stopping rules for success and futility."><svg viewBox="0 0 620 120" role="img"><rect x="20" y="44" width="580" height="12" rx="6" fill="var(--line)"/><rect x="20" y="44" width="387" height="12" rx="6" fill="var(--ink)"/>
+<g font-family="Arial" text-anchor="middle"><circle cx="213" cy="50" r="11" fill="var(--ink)"/><text x="213" y="26" font-size="14" font-weight="700" fill="var(--ink)">Look 1</text><text x="213" y="82" font-size="12" fill="var(--muted)">20 per arm</text><text x="213" y="102" font-size="12" fill="var(--ink-2)">75% → continue</text>
+<circle cx="407" cy="50" r="11" fill="var(--ink)"/><text x="407" y="26" font-size="14" font-weight="700" fill="var(--ink)">Look 2</text><text x="407" y="82" font-size="12" fill="var(--muted)">40 per arm</text><text x="407" y="102" font-size="12" font-weight="700" fill="var(--good)">99% → stop for success</text>
+<circle cx="600" cy="50" r="11" fill="#fff" stroke="var(--ink)" stroke-width="3"/><text x="590" y="26" font-size="14" font-weight="700" fill="var(--ink)">Final</text><text x="590" y="82" font-size="12" fill="var(--muted)">60 per arm</text></g></svg></figure>
 </details>
-<div class="workspace-label" id="experiment"><div class="work-caption"><h2>Your experiment</h2><p>Click a section to expand.</p></div><button class="collapse-all" id="collapse-all" hidden>Minimise all</button></div>
+<div class="workspace-label" id="experiment"><div class="work-caption"><h2>Your experiment</h2><p>Click a section title to minimise or expand it.</p></div><button class="collapse-all" id="collapse-all">Minimise all</button></div>
 <div class="stages">
 <section class="stage" id="data-stage" aria-labelledby="data-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="data-toggle" aria-expanded="false" aria-controls="data-body"><span><span class="stage-title" id="data-title">Data</span></span><span class="stage-summary" id="data-summary">Video trial · 40 per arm</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="data" aria-label="Focus on simulated data">Focus</button></div>
-  <div class="stage-body" id="data-body" hidden>
+  <div class="stage-header"><h2><button class="stage-toggle" id="data-toggle" aria-expanded="true" aria-controls="data-body"><span><span class="stage-title" id="data-title">Data</span></span><span class="stage-summary" id="data-summary">Video trial · 40 per arm</span><span class="toggle-word">Collapse</span></button></h2><button class="focus-button" data-stage="data" aria-label="Focus on simulated data">Focus</button></div>
+  <div class="stage-body hide-controls" id="data-body">
     <aside class="controls data-controls" aria-label="Trial settings">
       <fieldset><legend>Trial data</legend>
         <div class="field"><label for="src">Data source</label><select id="src"><option value="video">The trial in the video</option><option value="sim">Simulate a new trial</option></select></div>
@@ -164,12 +188,12 @@
       </fieldset>
       <fieldset><legend>New sample</legend><button class="primary full" id="resim">Draw a new trial</button><p class="protocol">Outcome: viral clearance at 12 weeks<br>Random seed: <span id="seed-v">4187</span><br>Hypothetical data.</p></fieldset>
     </aside>
-    <div class="visuals"><div class="plot-title"><h3>Patient outcomes</h3><span>One dot = one patient</span></div><figure><div class="plot" id="fig1"></div><figcaption class="plot-caption">Filled: cleared · hollow: not cleared</figcaption></figure><p class="evidence-note" id="data-estimate"></p></div>
+    <div class="visuals"><div class="plot-title"><h3>Patient outcomes</h3><div class="plot-tools"><div class="legend-people" aria-label="Legend"><span><svg viewBox="-8 -15 16 25"><circle cy="-9" r="5" fill="var(--ink-2)"/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z" fill="var(--ink-2)"/></svg>Cleared</span><span><svg viewBox="-8 -15 16 25"><circle cy="-9" r="4.2" fill="none" stroke="var(--ink-2)" stroke-width="1.6"/><path d="M-6.2 8.2V1q0-4.2 4.2-4.2h4q4.2 0 4.2 4.2v7.2z" fill="none" stroke="var(--ink-2)" stroke-width="1.6"/></svg>Not cleared</span></div><button class="settings-toggle" data-stage="data" data-label="Change trial data">Change trial data</button></div></div><figure><div class="plot" id="fig1"></div></figure><p class="evidence-note" id="data-estimate"></p></div>
   </div>
 </section>
 <section class="stage" id="priors-stage" aria-labelledby="priors-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="priors-toggle" aria-expanded="false" aria-controls="priors-body"><span><span class="stage-title" id="priors-title">Priors</span></span><span class="stage-summary" id="priors-summary">Video prior</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="priors" aria-label="Focus on priors">Focus</button></div>
-  <div class="stage-body" id="priors-body" hidden>
+  <div class="stage-header"><h2><button class="stage-toggle" id="priors-toggle" aria-expanded="true" aria-controls="priors-body"><span><span class="stage-title" id="priors-title">Priors</span></span><span class="stage-summary" id="priors-summary">Video prior</span><span class="toggle-word">Collapse</span></button></h2><button class="focus-button" data-stage="priors" aria-label="Focus on priors">Focus</button></div>
+  <div class="stage-body hide-controls" id="priors-body">
     <aside class="controls prior-controls" aria-label="Prior settings">
       <fieldset><legend>Effect prior · δ</legend>
         <div class="field"><label for="family">Distribution family</label><select id="family"><option value="beta">Beta per arm (video)</option><option value="normal">Normal</option><option value="cauchy">Cauchy</option><option value="laplace">Laplace</option><option value="uniform">Uniform</option></select></div>
@@ -178,17 +202,17 @@
         </div>
         <p class="helper" id="parameter-note"></p>
       </fieldset>
-      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-p="0" aria-pressed="true">Video prior</button><button class="chip" data-p="1" aria-pressed="false">Broad reference</button><button class="chip" data-p="2" aria-pressed="false">Sceptical</button><button class="chip" data-p="3" aria-pressed="false">Enthusiastic</button></div><div class="projection-preset"><select id="focus-preset" aria-label="Starting belief"><option value="">Your custom prior</option><option value="0" selected>Video prior</option><option value="1">Broad reference</option><option value="2">Sceptical</option><option value="3">Enthusiastic</option></select></div></fieldset>
+      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-p="0" aria-pressed="true">Video prior (sceptical)</button><button class="chip" data-p="1" aria-pressed="false">Enthusiastic</button></div><div class="projection-preset"><select id="focus-preset" aria-label="Starting belief"><option value="">Your custom prior</option><option value="0" selected>Video prior (sceptical)</option><option value="1">Enthusiastic</option></select></div></fieldset>
       <details class="mini-details"><summary>Prior on clearance with standard care</summary><p class="helper">From past cohorts. A Beta prior; the video prior uses it for both arms.</p><div class="field"><label for="hm">Expected clearance <output id="hm-v">40%</output></label><input type="range" id="hm" min="10" max="90" step="1" value="40"></div><div class="field"><label for="hw">Worth (patients) <output id="hw-v">20</output></label><input type="range" id="hw" min="2" max="100" step="1" value="20"></div><p class="helper">More patients means a more concentrated prior.</p><p class="protocol" id="ig-txt"></p></details>
     </aside>
-    <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><span id="prior-family-name">Normal prior</span></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the difference in clearance.</figcaption></figure><div class="metrics"><div class="metric"><span id="prior-centre-label">Prior mean</span><strong id="prior-centre"></strong><small id="prior-centre-note">Expected treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>Percentage points of clearance</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div></div>
+    <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><div class="plot-tools"><span id="prior-family-name">Normal prior</span><button class="settings-toggle" data-stage="priors" data-label="Change the prior">Change the prior</button></div></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the difference in clearance.</figcaption></figure><div class="metrics"><div class="metric"><span id="prior-centre-label">Prior mean</span><strong id="prior-centre"></strong><small id="prior-centre-note">Expected treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>Percentage points of clearance</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div></div>
   </div>
 </section>
 <section class="stage" id="results-stage" aria-labelledby="results-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="false" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">P(benefit) 99.2%</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
-  <div class="stage-body" id="results-body" hidden>
+  <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="true" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">P(benefit) 99.2%</span><span class="toggle-word">Collapse</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
+  <div class="stage-body hide-controls" id="results-body">
     <aside class="controls results-controls" aria-label="Results settings"><fieldset><legend>Benefit threshold</legend><div class="field"><label for="mcid">Meaningful benefit <output id="mcid-v">10 points</output></label><input type="range" id="mcid" min="0" max="30" step="1" value="10"><p class="helper">A 10-point gain in clearance is the illustrative threshold from the video; choose one for your context.</p></div></fieldset><fieldset><legend>Show on the plot</legend><label class="check"><input type="checkbox" data-k="prior" checked><i class="sw prior" aria-hidden="true"></i>Prior</label><label class="check"><input type="checkbox" data-k="like" checked><i class="sw like" aria-hidden="true"></i>Likelihood</label><label class="check"><input type="checkbox" data-k="post" checked><i class="sw" aria-hidden="true"></i>Posterior</label></fieldset></aside>
-    <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><span id="posterior-family"></span></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="decision"></p><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-content"><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></div></details></div>
+    <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><div class="plot-tools"><span id="posterior-family"></span><button class="settings-toggle" data-stage="results" data-label="Change threshold">Change threshold</button></div></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="decision"></p><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-content"><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></div></details></div>
   </div>
 </section>
 </div>
@@ -253,13 +277,12 @@ const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g
    in percentage points. The standard-care rate p_c has a Beta prior (past cohorts)
    and is integrated out numerically. The δ prior is either a chosen family, or
    "beta": an independent Beta prior on each arm, exactly as in the video. */
-const S={src:'video',look:40,n:40,pc:40,pt:70,seed:4187,m0:0,s0:10,hm:40,hw:20,mcid:10,
+const S={freq:false,src:'video',look:40,n:40,pc:40,pt:70,seed:4187,m0:0,s0:10,hm:40,hw:20,mcid:10,
  family:'beta',show:{prior:true,like:true,post:true}};
 const S0MIN=2,S0MAX=60;
 const s0FromSlider=t=>S0MIN*Math.pow(S0MAX/S0MIN,t/1000);
 const sliderFromS0=s=>Math.round(1000*Math.log(s/S0MIN)/Math.log(S0MAX/S0MIN));
-const PRESETS=[{name:'Video prior',family:'beta',m:0,s:10},{name:'Broad reference',family:'normal',m:0,s:50},
- {name:'Sceptical',family:'normal',m:0,s:10},{name:'Enthusiastic',family:'normal',m:20,s:10}];
+const PRESETS=[{name:'Video prior (sceptical)',family:'beta',m:0,s:10},{name:'Enthusiastic',family:'normal',m:20,s:10}];
 const FAMILY_NAMES={beta:'Beta per arm',normal:'Normal',cauchy:'Cauchy',laplace:'Laplace',uniform:'Uniform'};
 let D=null;
 const fitCache=new Map();
@@ -376,7 +399,7 @@ function simulate(){
 
 /* ---------- svg helpers ---------- */
 const SVG=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" role="img">'+inner+'</svg>';
-const T=(x,y,s,o)=>{o=o||{};const size=projectionMode()?Math.max(o.size||16,window.innerWidth>=1400&&window.innerHeight>=850?26:22):(o.size||16);return '<text x="'+x+'" y="'+y+'" fill="'+(o.fill||"var(--ink-3)")+
+const T=(x,y,s,o)=>{o=o||{};const size=projectionMode()?Math.max(o.size||16,window.innerWidth>=1750&&window.innerHeight>=1060?26:22):(o.size||16);return '<text x="'+x+'" y="'+y+'" fill="'+(o.fill||"var(--ink-3)")+
  '" font-size="'+size+'" font-family="'+(o.font||"var(--f-mono)")+'" text-anchor="'+(o.anchor||"start")+
  '" font-weight="'+(o.weight||400)+'"'+(o.ls?' letter-spacing="'+o.ls+'"':'')+'>'+esc(s)+'</text>';};
 const L=(x1,y1,x2,y2,o)=>{o=o||{};return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+
@@ -393,7 +416,7 @@ function drawFig1(){
  const W=chartWidth("fig1"),ml=projectionMode()?(W>=1400?300:250):W<500?120:190,mr=18,mt=16;
  const n=D.n,cols=n<=20?n:n<=40?20:n<=100?25:40,rows=Math.ceil(n/cols);
  const H=chartHeight('fig1',Math.max(250,2*(rows*22+50)+20)),rowH=(H-mt-10)/2;
- const x0=ml,x1=W-mr,step=Math.min((x1-x0)/cols,(rowH-34)/rows),r=Math.max(2.5,Math.min(13,step*.38));
+ const x0=ml,x1=W-mr,step=Math.min((x1-x0)/cols,(rowH-34)/rows),r=Math.max(3,Math.min(16,step*.34));
  const arms=[{n:"Standard care",d:D.c,x:D.xc,col:"var(--blue)"},{n:"New therapy",d:D.t,x:D.xt,col:"var(--post)"}];
  let s="";
  arms.forEach((a,k)=>{
@@ -404,7 +427,8 @@ function drawFig1(){
   s+=T(x0-16,top+80,Math.round(100*a.x/n)+'%',{anchor:"end",size:W<500?14:16});
   const gx=x0+(x1-x0-cols*step)/2+step/2,gy=top+(rowH-rows*step)/2+step/2;
   a.d.forEach((v,i)=>{const cx=gx+(i%cols)*step,cy=gy+Math.floor(i/cols)*step;
-   s+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+(v?a.col:'var(--white)')+'" stroke="'+a.col+'" stroke-width="'+(v?0:Math.max(1.5,r*.22)).toFixed(1)+'"/>'});
+   const k=r/9,st=v?'fill="'+a.col+'"':'fill="var(--white)" stroke="'+a.col+'" stroke-width="'+(1.7/k).toFixed(2)+'"';
+   s+='<g transform="translate('+cx.toFixed(1)+' '+(cy+r*.15).toFixed(1)+') scale('+k.toFixed(3)+')"><circle cy="-9" r="5" '+st+'/><path d="M-7 9V1q0-5 5-5h4q5 0 5 5v8z" '+st+'/></g>'});
  });
  document.getElementById("fig1").innerHTML=SVG(W,H,s);
 }
@@ -413,7 +437,7 @@ function drawFig1(){
 const $=id=>document.getElementById(id);
 const withSign=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(Number.isInteger(v)?0:1)+' points';
 const ptsUnits=v=>f1(v)+' points';
-let activeStage=null,focusedStage=null,focusPlaceholder=null,returnFocus=null,F2=null;
+let focusedStage=null,focusPlaceholder=null,returnFocus=null,F2=null;
 const stageIds=['data','priors','results'];
 
 function projectionMode(){return !!document.querySelector('.focus-dialog[open]')&&window.innerWidth>=900&&window.innerHeight>=600}
@@ -426,7 +450,7 @@ function curvePoints(lo,hi,fn,extra=[]){
 }
 function drawDensityPlot(id,mode){
  const priorOnly=mode==='prior',P=fit(),like=P.like,W=chartWidth(id),H=chartHeight(id,W<500?340:380);
- const x0=W<450?65:80,x1=W-18,mt=projectionMode()&&priorOnly?34:64,yAx=H-(projectionMode()?75:84);
+ const x0=W<450?65:80,x1=W-18,mt=projectionMode()&&priorOnly?34:64,yAx=H-(projectionMode()?100:84);
  let lo,hi;
  if(priorOnly){
   if(S.family==='beta'){lo=Math.min(priorQuantile(.001),0);hi=Math.max(priorQuantile(.999),0)}
@@ -503,7 +527,7 @@ function comparisonRows(){
 }
 function drawComparison(){
  const rows=comparisonRows(),beliefs=$('comparison-mode').value==='beliefs';
- $('comparison-note').textContent=beliefs?'The video prior and three Normal priors on the effect. Same trial.':'Same centre and scale; different spreads and tails. Same trial.';
+ $('comparison-note').textContent=beliefs?'The sceptical video prior and an enthusiastic Normal prior. Same trial.':'Same centre and scale; different spreads and tails. Same trial.';
  const W=projectionMode()?chartWidth('fig3'):1000,mt=45,H=chartHeight('fig3',mt+rows.length*60+84);
  const rowH=(H-mt-84)/rows.length,x0=W*.235,x1=W*.66;
  let lo=Math.min(0,S.mcid,...rows.map(r=>r.lo)),hi=Math.max(0,S.mcid,...rows.map(r=>r.hi));
@@ -540,12 +564,12 @@ const familyDescriptions={
  uniform:'Equally plausible within the bounds; impossible outside.'
 };
 function drawReadouts(){
- const P=fit(),beta=S.family==='beta',name=beta?'Video prior · Beta per arm':FAMILY_NAMES[S.family],p0=1-P.cdf(0),pm=1-P.cdf(S.mcid),[ha,hb]=histAB();
+ const P=fit(),beta=S.family==='beta',name=beta?'Video prior (sceptical) · Beta per arm':FAMILY_NAMES[S.family],p0=1-P.cdf(0),pm=1-P.cdf(S.mcid),[ha,hb]=histAB();
  $('data-summary').textContent=(S.src==='video'?'Video trial · ':'Simulated · ')+D.n+' per arm';
  $('priors-summary').textContent=name;
  $('results-summary').textContent='P(benefit) '+pct(p0);
  $('look-field').hidden=S.src!=='video';$('sim-fields').hidden=S.src==='video';
- $('data-estimate').innerHTML='<strong>Observed clearance:</strong> new therapy '+D.xt+'/'+D.n+' ('+Math.round(100*D.rt)+'%) vs standard care '+D.xc+'/'+D.n+' ('+Math.round(100*D.rc)+'%). Difference '+sgn1(D.dhat)+' points (95% CI '+f1(D.lo)+' to '+f1(D.hi)+'; <i>p</i> = '+pr2(D.p)+')';
+ $('data-estimate').innerHTML='<strong>Observed clearance:</strong> new therapy '+D.xt+'/'+D.n+' ('+Math.round(100*D.rt)+'%) vs standard care '+D.xc+'/'+D.n+' ('+Math.round(100*D.rc)+'%).<button class="link-button" id="freq-toggle" aria-expanded="'+S.freq+'">'+(S.freq?'Hide frequentist results':'Frequentist results')+'</button>'+(S.freq?'<span class="freq">Difference '+sgn1(D.dhat)+' points · 95% CI '+f1(D.lo)+' to '+f1(D.hi)+' · <i>p</i> = '+pr2(D.p)+' (two-proportion test)</span>':'');
  document.querySelector('.prior-fields').hidden=beta;
  $('location-label').textContent=S.family==='cauchy'?'Location':'Mean';
  $('scale-label').textContent=S.family==='normal'?'Standard deviation':S.family==='laplace'?'Scale · b':S.family==='uniform'?'Half-width':'Scale';
@@ -576,35 +600,33 @@ function drawReadouts(){
  for(const id in out){$(id+'-v').textContent=out[id];$(id).setAttribute('aria-valuetext',String(out[id]))}
  $('seed-v').textContent=S.src==='video'?'video trial':S.seed;
 }
-function renderActive(){
- if(activeStage==='data'){
-  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Patients who cleared BK viraemia in the standard-care and new-therapy arms. Counts appear below.');
- }else if(activeStage==='priors')drawDensityPlot('prior-plot','prior');
- else if(activeStage==='results'){drawDensityPlot('fig2','result');if($('sensitivity').open)drawComparison()}
+const openStages=new Set(stageIds);
+function renderStage(id){
+ if(id==='data'){drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Patients who cleared BK viraemia in the standard-care and new-therapy arms. Counts appear below.')}
+ else if(id==='priors')drawDensityPlot('prior-plot','prior');
+ else if(id==='results'){drawDensityPlot('fig2','result');if($('sensitivity').open)drawComparison()}
 }
+function renderActive(){if(focusedStage)renderStage(focusedStage);else for(const id of stageIds)if(openStages.has(id))renderStage(id)}
 function redraw(){drawReadouts();renderActive()}
-
-function openStage(id){
- for(const key of stageIds){
-  const open=key===id;
-  $(key+'-stage').classList.toggle('open',open);$(key+'-body').hidden=!open;
-  $(key+'-toggle').setAttribute('aria-expanded',String(open));
-  $(key+'-toggle').querySelector('.toggle-word').textContent=open?'Collapse':'Expand';
- }
- activeStage=id;$('collapse-all').hidden=!id;renderActive();
+function setStage(id,open){
+ open?openStages.add(id):openStages.delete(id);
+ $(id+'-stage').classList.toggle('open',open);$(id+'-body').hidden=!open;
+ $(id+'-toggle').setAttribute('aria-expanded',String(open));
+ $(id+'-toggle').querySelector('.toggle-word').textContent=open?'Collapse':'Expand';
+ $('collapse-all').textContent=openStages.size?'Minimise all':'Expand all';
 }
 function exitFocus(){
  if(!focusedStage)return;
  const stage=$(focusedStage+'-stage'),button=stage.querySelector('.focus-button');
  focusPlaceholder.replaceWith(stage);focusPlaceholder=null;
- button.textContent='Focus';button.setAttribute('aria-label','Focus on '+(focusedStage==='data'?'simulated data':focusedStage));
+ button.textContent='Focus';button.setAttribute('aria-label','Focus on '+(focusedStage==='data'?'trial data':focusedStage));
  focusedStage=null;if($('focus-dialog').open)$('focus-dialog').close();
  renderActive();if(returnFocus?.isConnected)returnFocus.focus();returnFocus=null;
 }
 function enterFocus(id){
  if(focusedStage===id){exitFocus();return}
  if(focusedStage)exitFocus();
- openStage(id);const stage=$(id+'-stage');
+ setStage(id,true);const stage=$(id+'-stage');
  returnFocus=stage.querySelector('.focus-button');focusPlaceholder=document.createComment('Focused section returns here');
  stage.before(focusPlaceholder);$('focus-dialog').append(stage);focusedStage=id;
  $('focus-dialog').setAttribute('aria-labelledby',id+'-title');
@@ -613,14 +635,20 @@ function enterFocus(id){
 }
 for(const id of stageIds){
  $(id+'-toggle').addEventListener('click',()=>{
-  if(focusedStage){exitFocus();openStage(null);return}
-  openStage(activeStage===id?null:id);
+  if(focusedStage){exitFocus();return}
+  setStage(id,!openStages.has(id));renderActive();
  });
 }
+document.querySelectorAll('.settings-toggle').forEach(button=>button.addEventListener('click',()=>{
+ const body=$(button.dataset.stage+'-body'),show=body.classList.contains('hide-controls');
+ body.classList.toggle('hide-controls',!show);button.textContent=show?'Hide settings':button.dataset.label;button.setAttribute('aria-expanded',String(show));
+ renderActive();
+}));
+$('data-estimate').addEventListener('click',event=>{if(event.target.id==='freq-toggle'){S.freq=!S.freq;drawReadouts()}});
 document.querySelectorAll('.focus-button').forEach(button=>button.addEventListener('click',()=>enterFocus(button.dataset.stage)));
 $('focus-dialog').addEventListener('cancel',event=>{event.preventDefault();exitFocus()});
 $('focus-dialog').addEventListener('click',event=>{if(event.target===$('focus-dialog'))exitFocus()});
-$('collapse-all').addEventListener('click',()=>openStage(null));
+$('collapse-all').addEventListener('click',()=>{const any=openStages.size>0;for(const id of stageIds)setStage(id,!any);renderActive()});
 for(const id of ['look','n','pc','pt'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;simulate();redraw()});
 $('src').addEventListener('change',()=>{S.src=$('src').value;simulate();redraw()});
 for(const id of ['m0','mcid'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;if(id!=='mcid')fitCache.clear();redraw()});
