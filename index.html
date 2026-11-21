@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore Bayesian learning through a simulated kidney transplantation trial inspired by published research. Compare prior families and discover what the evidence says about change in kidney function.">
+<meta name="description" content="Explore Bayesian learning through a simulated trial of a new therapy for BK viraemia after kidney transplantation. Compare priors, watch the posterior update, and apply pre-specified stopping rules.">
 <meta name="color-scheme" content="light">
 <title>Priors on trial · Biostatistics in motion</title>
 <style>
@@ -134,57 +134,61 @@
 <main>
 <div class="intro">
   <div><div class="eyebrow">From assumptions to evidence</div><h1>Priors on <span>trial.</span></h1><p class="lede">See how priors shape conclusions.</p></div>
-  <div><p class="question">Can changing treatment better preserve kidney transplant function?</p><p class="story-copy">A real trial asked whether switching immunosuppression could improve kidney function. Explore that question with simulated 12-month changes in estimated glomerular filtration rate (eGFR).</p></div>
+  <div><p class="question">Does a new therapy clear BK viraemia after kidney transplant?</p><p class="story-copy">Kidney recipients with BK viraemia receive standard care (reduced immunosuppression), with or without a hypothetical new therapy. This is the example from the explainer video <em>Bayesian trials, explained with BK virus</em>.</p></div>
 </div>
 <div class="study-context" aria-label="The research question">
-  <div class="context-item"><span>Outcome</span><strong>12-month eGFR change (mL/min/1.73 m²)</strong></div>
-  <div class="context-item"><span>Treatment effect · δ</span><strong>Treatment − standard care</strong></div>
+  <div class="context-item"><span>Outcome</span><strong>BK viral clearance at 12 weeks</strong></div>
+  <div class="context-item"><span>Treatment effect · δ</span><strong>Clearance: new − standard (points)</strong></div>
   <div class="context-item"><span>Interpretation</span><strong>Positive favours the treatment</strong></div>
 </div>
 <details class="clinical-context">
-  <summary>The clinical motivation: benefit, uncertainty, and the prior</summary>
-  <p>Rostaing and colleagues randomised 173 stable kidney transplant recipients to switch from a calcineurin inhibitor to belatacept or continue their existing regimen. At 12 months after randomisation, mean calculated GFR had increased by 7.0 units with belatacept and 2.1 units with continued treatment: an observed difference of 4.9 units. Acute rejection occurred in six versus no patients. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3052236/" target="_blank" rel="noopener">Read the trial (CJASN, 2011)</a>.</p>
-  <p><strong>How likely is any benefit? How likely is a benefit large enough to matter?</strong> Those are different questions. Compare a sceptical prior with an enthusiastic one, then move the benefit threshold. Three units is illustrative; five units is another discussion threshold, motivated by <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8365649/" target="_blank" rel="noopener">research on 12-month eGFR in deceased donor transplantation</a>. Its relevance to a treatment-switching population needs clinical judgement.</p>
-  <p>The <strong>Earlier trial</strong> preset uses the observed 4.9-unit difference as its centre, with an illustrative scale of 2.5 units to allow more uncertainty when moving to a new study. Under a Normal prior, this scale is the standard deviation; it has a different meaning for the other families. The patient observations below are simulated, and the settings do not reconstruct the published trial. The prior represents earlier evidence for a new hypothetical trial. Kidney function is one part of the clinical decision; rejection and other outcomes also matter.</p>
+  <summary>The clinical motivation: BK virus, few patients, and the prior</summary>
+  <p>BK polyomavirus viraemia is common in the first year after kidney transplantation. It can progress to BK nephropathy and graft loss, and there is no proven antiviral therapy, so reducing immunosuppression remains standard care. Trials are small, which is where a Bayesian design helps: it combines earlier evidence with the accumulating data and answers the question clinicians ask: <strong>given the data, how likely is it that the therapy works?</strong></p>
+  <p>The <strong>Video prior</strong> gives each arm a Beta(8, 12) prior: about 40% clearance on standard care, worth about 20 patients, and deliberately sceptical, with no benefit assumed. Compare it with other priors on the treatment effect, then move the benefit threshold. A gain of 10 percentage points is the illustrative "meaningful" threshold used in the video.</p>
+  <p>The video's pre-specified rules look at 20 and 40 patients per arm: stop for success if P(δ &gt; 0) &gt; 97.5%, and for futility if P(δ &gt; 10 points) &lt; 10%. The trial and every number are hypothetical, for teaching.</p>
 </details>
 <div class="workspace-label" id="experiment"><div class="work-caption"><h2>Your experiment</h2><p>Click a section to expand.</p></div><button class="collapse-all" id="collapse-all" hidden>Minimise all</button></div>
 <div class="stages">
 <section class="stage" id="data-stage" aria-labelledby="data-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="data-toggle" aria-expanded="false" aria-controls="data-body"><span><span class="stage-title" id="data-title">Data</span></span><span class="stage-summary" id="data-summary">60 per arm</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="data" aria-label="Focus on simulated data">Focus</button></div>
+  <div class="stage-header"><h2><button class="stage-toggle" id="data-toggle" aria-expanded="false" aria-controls="data-body"><span><span class="stage-title" id="data-title">Data</span></span><span class="stage-summary" id="data-summary">Video trial · 40 per arm</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="data" aria-label="Focus on simulated data">Focus</button></div>
   <div class="stage-body" id="data-body" hidden>
     <aside class="controls data-controls" aria-label="Trial settings">
-      <fieldset><legend>Trial settings</legend>
-        <div class="field"><label for="n">Patients per arm <output id="n-v">60</output></label><input type="range" id="n" min="10" max="400" step="5" value="60"></div>
-        <div class="field"><label for="tau">True treatment effect <output id="tau-v">+2.5 units</output></label><input type="range" id="tau" min="-2" max="8" step="0.1" value="2.5"><p class="helper">Hidden from the analysis.</p></div>
-        <div class="field"><label for="sd">Patient variability · σ <output id="sd-v">8 units</output></label><input type="range" id="sd" min="3" max="13" step="0.1" value="8"></div>
+      <fieldset><legend>Trial data</legend>
+        <div class="field"><label for="src">Data source</label><select id="src"><option value="video">The trial in the video</option><option value="sim">Simulate a new trial</option></select></div>
+        <div class="field" id="look-field"><label for="look">Patients analysed per arm <output id="look-v">40</output></label><input type="range" id="look" min="5" max="40" step="1" value="40"><p class="helper">Look 1 = 20 per arm · Look 2 = 40 per arm.</p></div>
+        <div id="sim-fields" hidden>
+        <div class="field"><label for="n">Patients per arm <output id="n-v">40</output></label><input type="range" id="n" min="10" max="200" step="5" value="40"></div>
+        <div class="field"><label for="pc">True clearance, standard care <output id="pc-v">40%</output></label><input type="range" id="pc" min="5" max="95" step="1" value="40"></div>
+        <div class="field"><label for="pt">True clearance, new therapy <output id="pt-v">70%</output></label><input type="range" id="pt" min="5" max="95" step="1" value="70"><p class="helper">Hidden from the analysis.</p></div>
+        </div>
       </fieldset>
-      <fieldset><legend>New sample</legend><button class="primary full" id="resim">Draw a new trial</button><p class="protocol">Standard-care mean change: −4 units<br>Random seed: <span id="seed-v">4187</span><br>1 unit = 1 mL/min/1.73 m².<br>Simulated data.</p></fieldset>
+      <fieldset><legend>New sample</legend><button class="primary full" id="resim">Draw a new trial</button><p class="protocol">Outcome: viral clearance at 12 weeks<br>Random seed: <span id="seed-v">4187</span><br>Hypothetical data.</p></fieldset>
     </aside>
-    <div class="visuals"><div class="plot-title"><h3>Patient outcomes</h3><span>One dot = one patient</span></div><figure><div class="plot" id="fig1"></div><figcaption class="plot-caption">Tick: mean · bar: approximate 95% CI</figcaption></figure><p class="evidence-note" id="data-estimate"></p></div>
+    <div class="visuals"><div class="plot-title"><h3>Patient outcomes</h3><span>One dot = one patient</span></div><figure><div class="plot" id="fig1"></div><figcaption class="plot-caption">Filled: cleared · hollow: not cleared</figcaption></figure><p class="evidence-note" id="data-estimate"></p></div>
   </div>
 </section>
 <section class="stage" id="priors-stage" aria-labelledby="priors-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="priors-toggle" aria-expanded="false" aria-controls="priors-body"><span><span class="stage-title" id="priors-title">Priors</span></span><span class="stage-summary" id="priors-summary">Normal</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="priors" aria-label="Focus on priors">Focus</button></div>
+  <div class="stage-header"><h2><button class="stage-toggle" id="priors-toggle" aria-expanded="false" aria-controls="priors-body"><span><span class="stage-title" id="priors-title">Priors</span></span><span class="stage-summary" id="priors-summary">Video prior</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="priors" aria-label="Focus on priors">Focus</button></div>
   <div class="stage-body" id="priors-body" hidden>
     <aside class="controls prior-controls" aria-label="Prior settings">
       <fieldset><legend>Effect prior · δ</legend>
-        <div class="field"><label for="family">Distribution family</label><select id="family"><option value="normal">Normal</option><option value="cauchy">Cauchy</option><option value="laplace">Laplace</option><option value="uniform">Uniform</option></select></div>
-        <div class="prior-fields"><div class="field"><label for="m0"><span id="location-label">Mean</span><output id="m0-v">0 units</output></label><input type="range" id="m0" min="-8" max="12" step="0.1" value="0"></div>
-        <div class="field"><label for="s0"><span id="scale-label">Standard deviation</span><output id="s0-v">3.0 units</output></label><input type="range" id="s0" min="0" max="1000" step="1" value="0"></div>
+        <div class="field"><label for="family">Distribution family</label><select id="family"><option value="beta">Beta per arm (video)</option><option value="normal">Normal</option><option value="cauchy">Cauchy</option><option value="laplace">Laplace</option><option value="uniform">Uniform</option></select></div>
+        <div class="prior-fields"><div class="field"><label for="m0"><span id="location-label">Mean</span><output id="m0-v">0 points</output></label><input type="range" id="m0" min="-40" max="40" step="1" value="0"></div>
+        <div class="field"><label for="s0"><span id="scale-label">Standard deviation</span><output id="s0-v">10 points</output></label><input type="range" id="s0" min="0" max="1000" step="1" value="0"></div>
         </div>
         <p class="helper" id="parameter-note"></p>
       </fieldset>
-      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-m="0" data-s="20" aria-pressed="false">Broad reference</button><button class="chip" data-m="0" data-s="3" aria-pressed="true">Sceptical</button><button class="chip" data-m="5" data-s="3" aria-pressed="false">Enthusiastic</button><button class="chip" data-m="4.9" data-s="2.5" aria-pressed="false">Earlier trial</button></div><div class="projection-preset"><select id="focus-preset" aria-label="Starting belief"><option value="">Your custom prior</option><option value="0">Broad reference</option><option value="1" selected>Sceptical</option><option value="2">Enthusiastic</option><option value="3">Earlier trial</option></select></div></fieldset>
-      <details class="mini-details"><summary>Prior on patient variability</summary><p class="helper">Shared σ² uses an inverse-gamma prior.</p><div class="field"><label for="sig0">Reference SD · σ₀ <output id="sig0-v">8 units</output></label><input type="range" id="sig0" min="3" max="13" step="0.1" value="8"></div><div class="field"><label for="nu0">Prior strength · ν₀ <output id="nu0-v">20</output></label><input type="range" id="nu0" min="0" max="600" step="1" value="400"></div><p class="helper">Larger ν₀ means a more concentrated prior.</p><p class="protocol" id="ig-txt"></p></details>
+      <fieldset><legend>Starting belief</legend><div class="chips" id="chips"><button class="chip" data-p="0" aria-pressed="true">Video prior</button><button class="chip" data-p="1" aria-pressed="false">Broad reference</button><button class="chip" data-p="2" aria-pressed="false">Sceptical</button><button class="chip" data-p="3" aria-pressed="false">Enthusiastic</button></div><div class="projection-preset"><select id="focus-preset" aria-label="Starting belief"><option value="">Your custom prior</option><option value="0" selected>Video prior</option><option value="1">Broad reference</option><option value="2">Sceptical</option><option value="3">Enthusiastic</option></select></div></fieldset>
+      <details class="mini-details"><summary>Prior on clearance with standard care</summary><p class="helper">From past cohorts. A Beta prior; the video prior uses it for both arms.</p><div class="field"><label for="hm">Expected clearance <output id="hm-v">40%</output></label><input type="range" id="hm" min="10" max="90" step="1" value="40"></div><div class="field"><label for="hw">Worth (patients) <output id="hw-v">20</output></label><input type="range" id="hw" min="2" max="100" step="1" value="20"></div><p class="helper">More patients means a more concentrated prior.</p><p class="protocol" id="ig-txt"></p></details>
     </aside>
-    <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><span id="prior-family-name">Normal prior</span></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the treatment effect on mean eGFR change.</figcaption></figure><div class="metrics"><div class="metric"><span id="prior-centre-label">Prior mean</span><strong id="prior-centre"></strong><small id="prior-centre-note">Expected treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>eGFR units of treatment effect</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div></div>
+    <div class="visuals"><div class="plot-title"><h3>Prior distribution</h3><span id="prior-family-name">Normal prior</span></div><p class="reading" id="prior-explanation"></p><figure><div class="plot" id="prior-plot"></div><figcaption class="plot-caption" id="prior-plot-note">The horizontal axis is the difference in clearance.</figcaption></figure><div class="metrics"><div class="metric"><span id="prior-centre-label">Prior mean</span><strong id="prior-centre"></strong><small id="prior-centre-note">Expected treatment effect</small></div><div class="metric"><span>Central 95% prior interval</span><strong id="prior-interval"></strong><small>Percentage points of clearance</small></div><div class="metric"><span>Prior P(any benefit)</span><strong id="prior-prob"></strong><small>Probability that δ &gt; 0</small></div></div></div>
   </div>
 </section>
 <section class="stage" id="results-stage" aria-labelledby="results-title">
-  <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="false" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">+1.7 units</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
+  <div class="stage-header"><h2><button class="stage-toggle" id="results-toggle" aria-expanded="false" aria-controls="results-body"><span><span class="stage-title" id="results-title">Results</span></span><span class="stage-summary" id="results-summary">P(benefit) 99.2%</span><span class="toggle-word">Expand</span></button></h2><button class="focus-button" data-stage="results" aria-label="Focus on results">Focus</button></div>
   <div class="stage-body" id="results-body" hidden>
-    <aside class="controls results-controls" aria-label="Results settings"><fieldset><legend>Benefit threshold</legend><div class="field"><label for="mcid">Meaningful benefit <output id="mcid-v">3 units</output></label><input type="range" id="mcid" min="0" max="7" step="0.1" value="3"><p class="helper">3 eGFR units is an illustrative threshold for this simulation; choose a threshold for your context.</p></div></fieldset><fieldset><legend>Show on the plot</legend><label class="check"><input type="checkbox" data-k="prior" checked><i class="sw prior" aria-hidden="true"></i>Prior</label><label class="check"><input type="checkbox" data-k="like" checked><i class="sw like" aria-hidden="true"></i>Likelihood</label><label class="check"><input type="checkbox" data-k="post" checked><i class="sw" aria-hidden="true"></i>Posterior</label></fieldset></aside>
-    <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><span id="posterior-family"></span></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-content"><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></div></details></div>
+    <aside class="controls results-controls" aria-label="Results settings"><fieldset><legend>Benefit threshold</legend><div class="field"><label for="mcid">Meaningful benefit <output id="mcid-v">10 points</output></label><input type="range" id="mcid" min="0" max="30" step="1" value="10"><p class="helper">A 10-point gain in clearance is the illustrative threshold from the video; choose one for your context.</p></div></fieldset><fieldset><legend>Show on the plot</legend><label class="check"><input type="checkbox" data-k="prior" checked><i class="sw prior" aria-hidden="true"></i>Prior</label><label class="check"><input type="checkbox" data-k="like" checked><i class="sw like" aria-hidden="true"></i>Likelihood</label><label class="check"><input type="checkbox" data-k="post" checked><i class="sw" aria-hidden="true"></i>Posterior</label></fieldset></aside>
+    <div class="visuals"><div class="plot-title"><h3>Posterior distribution</h3><span id="posterior-family"></span></div><div class="metrics" aria-label="Posterior results"><div class="metric"><span>Posterior mean effect</span><strong id="posterior-mean"></strong><small id="posterior-interval"></small></div><div class="metric"><span>P(any benefit)</span><strong id="posterior-p0"></strong><small>Probability that δ &gt; 0</small></div><div class="metric"><span>P(meaningful benefit)</span><strong class="accent" id="posterior-pm"></strong><small id="posterior-threshold"></small></div></div><figure><div class="plot tipwrap" id="fig2wrap"><div id="fig2"></div><div class="tip" id="tip2"></div></div><figcaption class="plot-caption">Shading: P(δ > threshold). Hover for probabilities.</figcaption></figure><p class="callout" id="decision"></p><p class="callout" id="result-reading"></p><details class="comparison" id="sensitivity"><summary>Compare priors</summary><div class="comparison-content"><div class="comparison-head"><label for="comparison-mode">Compare</label><select id="comparison-mode"><option value="families">Distribution families</option><option value="beliefs">Starting beliefs</option></select></div><p class="helper" id="comparison-note"></p><div class="forest" id="fig3"></div><div class="tbl comparison-table"><table id="comparison-table" aria-label="Prior sensitivity results"><thead><tr><th scope="col">Assumption</th><th scope="col">Mean effect</th><th scope="col">95% interval</th><th scope="col">P(δ &gt; 0)</th></tr></thead><tbody></tbody></table></div></div></details></div>
   </div>
 </section>
 </div>
@@ -245,23 +249,72 @@ const sig3=(x)=>x>=1e5?(x/1e3).toFixed(0)+"k":x>=100?x.toFixed(0):x.toFixed(1);
 const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 
-/* Independent effect and variance priors. All effect families use the same
-   variance-integrated likelihood; no normal approximation is substituted. */
-const S={n:60,tau:2.5,sd:8,seed:4187,m0:0,s0:3,sig0:8,nu0:20,mcid:3,ctrl:-4,
- family:'normal',show:{prior:true,like:true,post:true}};
-const S0MIN=.5,S0MAX=20;
+/* Binary outcome: clearance in each arm. Treatment effect δ = p_new − p_standard,
+   in percentage points. The standard-care rate p_c has a Beta prior (past cohorts)
+   and is integrated out numerically. The δ prior is either a chosen family, or
+   "beta": an independent Beta prior on each arm, exactly as in the video. */
+const S={src:'video',look:40,n:40,pc:40,pt:70,seed:4187,m0:0,s0:10,hm:40,hw:20,mcid:10,
+ family:'beta',show:{prior:true,like:true,post:true}};
+const S0MIN=2,S0MAX=60;
 const s0FromSlider=t=>S0MIN*Math.pow(S0MAX/S0MIN,t/1000);
 const sliderFromS0=s=>Math.round(1000*Math.log(s/S0MIN)/Math.log(S0MAX/S0MIN));
-const NUMIN=.2,NUMAX=200;
-const nuFromSlider=t=>NUMIN*Math.pow(NUMAX/NUMIN,t/600);
-const sliderFromNu=v=>Math.round(600*Math.log(v/NUMIN)/Math.log(NUMAX/NUMIN));
-const PRESETS=[{name:'Broad reference',m:0,s:20},{name:'Sceptical',m:0,s:3},
- {name:'Enthusiastic',m:5,s:3},{name:'Earlier trial',m:4.9,s:2.5}];
-const FAMILY_NAMES={normal:'Normal',cauchy:'Cauchy',laplace:'Laplace',uniform:'Uniform'};
+const PRESETS=[{name:'Video prior',family:'beta',m:0,s:10},{name:'Broad reference',family:'normal',m:0,s:50},
+ {name:'Sceptical',family:'normal',m:0,s:10},{name:'Enthusiastic',family:'normal',m:20,s:10}];
+const FAMILY_NAMES={beta:'Beta per arm',normal:'Normal',cauchy:'Cauchy',laplace:'Laplace',uniform:'Uniform'};
 let D=null;
 const fitCache=new Map();
 
+/* The video's trial: the same patient sequences as the animation (8/20 vs 11/20, then 15/40 vs 28/40). */
+const VIDEO=(()=>{
+ function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+ function seq(n1,k1,n2,k2,seed){const r=rng(seed),mk=(n,k)=>{const v=Array.from({length:n},(_,i)=>i<k?1:0);
+  for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[v[i],v[j]]=[v[j],v[i]]}return v};return[...mk(n1,k1),...mk(n2,k2)]}
+ return {c:seq(20,8,20,7,11),t:seq(20,11,20,17,29)};
+})();
+
+const histAB=(hm=S.hm,hw=S.hw)=>[hm/100*hw,(1-hm/100)*hw];
+const logBeta=(x,a,b)=>(a-1)*Math.log(x)+(b-1)*Math.log(1-x)+lgamma(a+b)-lgamma(a)-lgamma(b);
+const NP=400,PCG=Array.from({length:NP},(_,i)=>(i+.5)/NP);
+const DLO=-99.5,DHI=99.5,ND=1600;
+
+/* Normalise log-weights on an even δ grid into a distribution object. */
+function gridDist(x,logw){
+ const count=x.length-1,h=x[1]-x[0],lo=x[0],hi=x[count],density=new Float64Array(count+1),cdf=new Float64Array(count+1);
+ let peak=-Infinity;for(const v of logw)if(v>peak)peak=v;
+ let area=0;for(let i=0;i<=count;i++){density[i]=Number.isFinite(logw[i])?Math.exp(logw[i]-peak):0;area+=density[i]*(i===0||i===count?.5:1)*h}
+ let mean=0,second=0;
+ for(let i=0;i<=count;i++){density[i]/=area;const mass=density[i]*(i===0||i===count?.5:1)*h;mean+=x[i]*mass;second+=x[i]*x[i]*mass;
+  if(i)cdf[i]=cdf[i-1]+(density[i-1]+density[i])*h/2}
+ cdf[count]=1;
+ function cumulative(v){if(v<=lo)return 0;if(v>=hi)return 1;const pos=(v-lo)/h,i=Math.min(count-1,Math.floor(pos)),f=pos-i;
+  return Math.max(0,Math.min(1,cdf[i]+h*(density[i]*f+(density[i+1]-density[i])*f*f/2)))}
+ function quantile(p){let l=0,r=count;while(r-l>1){const mid=(l+r)>>1;if(cdf[mid]<p)l=mid;else r=mid}
+  let a=x[l],b=x[r];for(let j=0;j<35;j++){const mid=(a+b)/2;if(cumulative(mid)<p)a=mid;else b=mid}return(a+b)/2}
+ function pdf(v){if(v<lo||v>hi)return 0;const pos=(v-lo)/h,i=Math.min(count-1,Math.floor(pos)),f=pos-i;return density[i]+f*(density[i+1]-density[i])}
+ return {m:mean,s:Math.sqrt(Math.max(0,second-mean*mean)),lo:quantile(.025),hi:quantile(.975),median:quantile(.5),cdf:cumulative,quantile,pdf,x,density,h};
+}
+const dGrid=(lo=DLO,hi=DHI,count=ND)=>Float64Array.from({length:count+1},(_,i)=>lo+(hi-lo)*i/count);
+/* log ∫ π(p_c) · [Beta(p_c+δ) if pairBeta] · lik(p_c, δ) dp_c, by log-sum-exp over the p_c grid. */
+function integrated(x,useData,pairBeta,hm,hw){
+ const [a,b]=histAB(hm,hw),lp=PCG.map(p=>logBeta(p,a,b)),out=new Float64Array(x.length),tmp=new Float64Array(NP);
+ const xc=useData?D.xc:0,xt=useData?D.xt:0,n=useData?D.n:0;
+ for(let i=0;i<x.length;i++){
+  const d=x[i]/100;let mx=-Infinity;
+  for(let k=0;k<NP;k++){const pc=PCG[k],pt=pc+d;
+   if(pt<=0||pt>=1){tmp[k]=-Infinity;continue}
+   let v=lp[k]+xc*Math.log(pc)+(n-xc)*Math.log1p(-pc)+xt*Math.log(pt)+(n-xt)*Math.log1p(-pt);
+   if(pairBeta)v+=logBeta(pt,a,b);
+   tmp[k]=v;if(v>mx)mx=v}
+  if(mx===-Infinity){out[i]=-Infinity;continue}
+  let s=0;for(let k=0;k<NP;k++)if(tmp[k]>-Infinity)s+=Math.exp(tmp[k]-mx);out[i]=mx+Math.log(s);
+ }
+ return out;
+}
+const betaPriorCache=new Map();
+function betaPrior(hm=S.hm,hw=S.hw){const key=hm+'|'+hw;if(!betaPriorCache.has(key)){const x=dGrid(-99.5,99.5,800);betaPriorCache.set(key,gridDist(x,integrated(x,false,true,hm,hw)))}return betaPriorCache.get(key)}
+
 function priorLogDensity(x,m,s,family=S.family){
+ if(family==='beta'){const d=betaPrior().pdf(x);return d>0?Math.log(d):-Infinity}
  const z=(x-m)/s;
  switch(family){
   case 'normal':return -.5*z*z-Math.log(s)-.5*Math.log(2*Math.PI);
@@ -273,6 +326,7 @@ function priorLogDensity(x,m,s,family=S.family){
 }
 const priorDensity=(x,m=S.m0,s=S.s0,family=S.family)=>Math.exp(priorLogDensity(x,m,s,family));
 function priorCDF(x,m=S.m0,s=S.s0,family=S.family){
+ if(family==='beta')return betaPrior().cdf(x);
  const z=(x-m)/s;
  switch(family){
   case 'normal':return .5*erfc(-z/Math.SQRT2);
@@ -283,74 +337,40 @@ function priorCDF(x,m=S.m0,s=S.s0,family=S.family){
 }
 function priorQuantile(p,m=S.m0,s=S.s0,family=S.family){
  switch(family){
+  case 'beta':return betaPrior().quantile(p);
   case 'normal':{let l=-10,h=10;for(let i=0;i<70;i++){const z=(l+h)/2;if(.5*erfc(-z/Math.SQRT2)<p)l=z;else h=z}return m+s*(l+h)/2}
   case 'cauchy':return m+s*Math.tan(Math.PI*(p-.5));
   case 'laplace':return m+(p<.5?s*Math.log(2*p):-s*Math.log(2*(1-p)));
   case 'uniform':return m+s*(2*p-1);
  }
 }
-function likelihoodParameters(sig0=S.sig0,nu0=S.nu0){
- // Flat intercept integrated out: residual degrees of freedom = N - 2.
- const df=nu0+D.N-2, total=nu0*sig0*sig0+D.SSres;
- return {m:D.dhat,s:Math.sqrt(total/df*2/S.n),df,total};
-}
-function fit(m=S.m0,s=S.s0,sig0=S.sig0,nu0=S.nu0,family=S.family){
- const key=[m,s,sig0,nu0,family].join('|');
+/* Likelihood of δ with p_c integrated over its historical prior (data only, flat in δ). */
+let LIKE=null;
+function likelihood(){if(!LIKE){const x=dGrid();LIKE=gridDist(x,integrated(x,true,false,S.hm,S.hw))}return LIKE}
+function fit(m=S.m0,s=S.s0,family=S.family){
+ const key=[m,s,family,S.hm,S.hw].join('|');
  if(fitCache.has(key))return fitCache.get(key);
- const like=likelihoodParameters(sig0,nu0);
- const lo=family==='uniform'?m-s:Math.min(m-10*s,like.m-16*like.s);
- const hi=family==='uniform'?m+s:Math.max(m+10*s,like.m+16*like.s);
- let count=Math.min(32768,Math.max(4096,Math.ceil((hi-lo)/Math.min(s,like.s)*80)));
- if(count%2)count++;
- const h=(hi-lo)/count,x=new Float64Array(count+1),density=new Float64Array(count+1),cdf=new Float64Array(count+1);
- let peak=-Infinity;
- for(let i=0;i<=count;i++){
-  x[i]=lo+i*h;
-  // Subtract the maximum log weight before exponentiating for stability.
-  density[i]=priorLogDensity(x[i],m,s,family)-(like.df+1)/2*Math.log1p(Math.pow((x[i]-like.m)/like.s,2)/like.df);
-  peak=Math.max(peak,density[i]);
+ const like=likelihood();let result;
+ if(family==='beta'){const x=dGrid();result=gridDist(x,integrated(x,true,true,S.hm,S.hw))}
+ else{
+  let x,ll;
+  if(family==='uniform'){x=dGrid(Math.max(DLO,m-s),Math.min(DHI,m+s));ll=integrated(x,true,false,S.hm,S.hw)}
+  else{x=like.x;ll=Array.from(like.density,v=>v>0?Math.log(v):-Infinity)}
+  result=gridDist(x,Array.from(x,(v,i)=>priorLogDensity(v,m,s,family)+ll[i]));
  }
- let area=0;
- for(let i=0;i<=count;i++){density[i]=Math.exp(density[i]-peak);area+=density[i]*(i===0||i===count?.5:1)*h}
- let mean=0,second=0;
- for(let i=0;i<=count;i++){
-  density[i]/=area;
-  const mass=density[i]*(i===0||i===count?.5:1)*h;
-  mean+=x[i]*mass;second+=x[i]*x[i]*mass;
-  if(i)cdf[i]=cdf[i-1]+(density[i-1]+density[i])*h/2;
- }
- cdf[count]=1;
- function cumulative(v){
-  if(v<=lo)return 0;if(v>=hi)return 1;
-  const pos=(v-lo)/h,i=Math.min(count-1,Math.floor(pos)),f=pos-i;
-  return Math.max(0,Math.min(1,cdf[i]+h*(density[i]*f+(density[i+1]-density[i])*f*f/2)));
- }
- function quantile(p){
-  let l=0,r=count;while(r-l>1){const mid=(l+r)>>1;if(cdf[mid]<p)l=mid;else r=mid}
-  let a=x[l],b=x[r];for(let j=0;j<35;j++){const mid=(a+b)/2;if(cumulative(mid)<p)a=mid;else b=mid}return(a+b)/2;
- }
- function pdf(v){if(v<lo||v>hi)return 0;const pos=(v-lo)/h,i=Math.min(count-1,Math.floor(pos)),f=pos-i;return density[i]+f*(density[i+1]-density[i])}
- const result={m:mean,s:Math.sqrt(Math.max(0,second-mean*mean)),lo:quantile(.025),hi:quantile(.975),median:quantile(.5),cdf:cumulative,quantile,pdf,x,density,h,like,family};
- fitCache.set(key,result);return result;
+ result.like=like;result.family=family;fitCache.set(key,result);return result;
 }
 
 function simulate(){
- fitCache.clear();
- const rng=mulberry32(S.seed*2654435761%4294967296),z=gaussFactory(rng);
- const c=[],t=[];
- for(let i=0;i<S.n;i++){c.push(S.ctrl+S.sd*z());t.push(S.ctrl+S.tau+S.sd*z());}
- const K=S.ctrl,N=2*S.n;
- let Sc=0,St=0,Syy=0;
- for(let i=0;i<S.n;i++){const a=c[i]-K,b=t[i]-K;Sc+=a;St+=b;Syy+=a*a+b*b;}
- const mc=Sc/S.n+K,mt=St/S.n+K;
- let ssc=0,sst=0;
- for(let i=0;i<S.n;i++){ssc+=(c[i]-mc)*(c[i]-mc);sst+=(t[i]-mt)*(t[i]-mt);}
- const SSres=ssc+sst,dfp=N-2,sp2=SSres/dfp,sep=Math.sqrt(sp2*2/S.n);
- const dhat=mt-mc,tstat=dhat/sep,pv=2*(1-pt(Math.abs(tstat),dfp)),tc=qt(0.975,dfp);
- D={c:c,t:t,N:N,mc:mc,mt:mt,sc:Math.sqrt(ssc/(S.n-1)),st:Math.sqrt(sst/(S.n-1)),
-    seC:Math.sqrt(ssc/(S.n-1)/S.n),seT:Math.sqrt(sst/(S.n-1)/S.n),
-    Sc:Sc,St:St,Syy:Syy,SSres:SSres,dfp:dfp,sp:Math.sqrt(sp2),sep:sep,
-    dhat:dhat,tstat:tstat,p:pv,lo:dhat-tc*sep,hi:dhat+tc*sep};
+ fitCache.clear();LIKE=null;
+ let c,t;
+ if(S.src==='video'){c=VIDEO.c.slice(0,S.look);t=VIDEO.t.slice(0,S.look)}
+ else{const rng=mulberry32(S.seed*2654435761%4294967296);c=[];t=[];
+  for(let i=0;i<S.n;i++){c.push(rng()<S.pc/100?1:0);t.push(rng()<S.pt/100?1:0)}}
+ const n=c.length,xc=c.reduce((a,b)=>a+b,0),xt=t.reduce((a,b)=>a+b,0),rc=xc/n,rt=xt/n;
+ const se=100*Math.sqrt(rc*(1-rc)/n+rt*(1-rt)/n),pool=(xc+xt)/(2*n),sep=Math.sqrt(pool*(1-pool)*2/n);
+ const z=sep>0?(rt-rc)/sep:0,dhat=100*(rt-rc);
+ D={c,t,n,xc,xt,rc,rt,dhat,se,lo:dhat-1.96*se,hi:dhat+1.96*se,z,p:sep>0?erfc(Math.abs(z)/Math.SQRT2):1};
 }
 
 
@@ -370,48 +390,29 @@ function niceTicks(lo,hi,target){
 
 /* ---------- figure 1 ---------- */
 function drawFig1(){
- const W=chartWidth("fig1"),ml=projectionMode()?(W>=1400?270:230):W<500?120:156,mr=18,mt=20,mb=88;
- const H=chartHeight('fig1',342),rowH=projectionMode()?(H-mt-mb-18)/2:108;
- const rowTop=[mt,mt+rowH+8];
- const yAx=rowTop[1]+rowH+10;
- const x0=ml,x1=W-mr;
- const all=D.c.concat(D.t);
- let lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);
- const pad=(hi-lo)*0.05;lo-=pad;hi+=pad;
- const X=(v)=>x0+(v-lo)/(hi-lo)*(x1-x0);
- const rows=[{n:"Control",lab:"standard care",d:D.c,m:D.mc,se:D.seC,col:"var(--blue)",top:rowTop[0]},
-             {n:"Treatment",lab:"alternative regimen",d:D.t,m:D.mt,se:D.seT,col:"var(--post)",top:rowTop[1]}];
+ const W=chartWidth("fig1"),ml=projectionMode()?(W>=1400?300:250):W<500?120:190,mr=18,mt=16;
+ const n=D.n,cols=n<=20?n:n<=40?20:n<=100?25:40,rows=Math.ceil(n/cols);
+ const H=chartHeight('fig1',Math.max(250,2*(rows*22+50)+20)),rowH=(H-mt-10)/2;
+ const x0=ml,x1=W-mr,step=Math.min((x1-x0)/cols,(rowH-34)/rows),r=Math.max(2.5,Math.min(13,step*.38));
+ const arms=[{n:"Standard care",d:D.c,x:D.xc,col:"var(--blue)"},{n:"New therapy",d:D.t,x:D.xt,col:"var(--post)"}];
  let s="";
- rows.forEach(function(r){s+='<rect x="'+x0+'" y="'+r.top+'" width="'+(x1-x0)+'" height="'+rowH+
-   '" fill="var(--surface-2)" rx="2"/>';});
- niceTicks(lo,hi,W<500?3:6).forEach(function(v){
-   s+=L(X(v),mt,X(v),yAx,{stroke:"var(--rule)"});
-   s+=T(X(v),yAx+22,MIN(v),{anchor:"middle"});});
- s+=T((x0+x1)/2,yAx+49,"12-month eGFR change",{anchor:"middle",size:W<500?16:18});
- s+=T((x0+x1)/2,yAx+74,"(mL/min/1.73 m²)",{anchor:"middle",size:16});
- s+=L(x0,yAx,x1,yAx,{stroke:"var(--rule-2)"});
- rows.forEach(function(r){
-   const rng=mulberry32((S.seed+r.n.length*977)|0),dotY=r.top+rowH*.30;
-   r.d.forEach(function(v){
-     const jy=dotY+(rng()-0.5)*42;
-     s+='<circle cx="'+X(v).toFixed(1)+'" cy="'+jy.toFixed(1)+'" r="3" fill="'+r.col+
-        '" fill-opacity="0.5" stroke="var(--surface-2)" stroke-width="0.7"/>';});
-   const cy=r.top+rowH*.72;
-   s+=L(X(r.m-1.96*r.se),cy,X(r.m+1.96*r.se),cy,{stroke:r.col,w:2.5,cap:"round"});
-   s+=L(X(r.m),cy-9,X(r.m),cy+9,{stroke:r.col,w:4,cap:"round"});
-   s+=T(x0-16,r.top+30,r.n,{anchor:"end",fill:"var(--ink)",size:W<500?16:22,font:"var(--f-body)",weight:600});
-   s+=T(x0-16,r.top+53,r.lab,{anchor:"end",size:W<500?14:16});
-   const lx=X(r.m+1.96*r.se)+10,room=lx+96<x1;
-   s+=T(room?lx:X(r.m-1.96*r.se)-9,cy+4,"mean "+f1(r.m),
-        {anchor:room?"start":"end",fill:r.col,size:18,weight:500});});
+ arms.forEach((a,k)=>{
+  const top=mt+k*(rowH+6);
+  s+='<rect x="'+x0+'" y="'+top+'" width="'+(x1-x0)+'" height="'+rowH+'" fill="var(--surface-2)" rx="2"/>';
+  s+=T(x0-16,top+30,a.n,{anchor:"end",fill:a.col,size:W<500?16:22,font:"var(--f-body)",weight:600});
+  s+=T(x0-16,top+56,a.x+' / '+n+' cleared',{anchor:"end",fill:"var(--ink)",size:W<500?14:17,weight:600});
+  s+=T(x0-16,top+80,Math.round(100*a.x/n)+'%',{anchor:"end",size:W<500?14:16});
+  const gx=x0+(x1-x0-cols*step)/2+step/2,gy=top+(rowH-rows*step)/2+step/2;
+  a.d.forEach((v,i)=>{const cx=gx+(i%cols)*step,cy=gy+Math.floor(i/cols)*step;
+   s+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+(v?a.col:'var(--white)')+'" stroke="'+a.col+'" stroke-width="'+(v?0:Math.max(1.5,r*.22)).toFixed(1)+'"/>'});
+ });
  document.getElementById("fig1").innerHTML=SVG(W,H,s);
-
 }
 
 
 const $=id=>document.getElementById(id);
-const withSign=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(Number.isInteger(v)?0:1)+' units';
-const egfrUnits=v=>f1(v)+' units';
+const withSign=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(Number.isInteger(v)?0:1)+' points';
+const ptsUnits=v=>f1(v)+' points';
 let activeStage=null,focusedStage=null,focusPlaceholder=null,returnFocus=null,F2=null;
 const stageIds=['data','priors','results'];
 
@@ -428,17 +429,18 @@ function drawDensityPlot(id,mode){
  const x0=W<450?65:80,x1=W-18,mt=projectionMode()&&priorOnly?34:64,yAx=H-(projectionMode()?75:84);
  let lo,hi;
  if(priorOnly){
-  const half=S.family==='uniform'?S.s0*1.2:S.s0*4;
-  lo=Math.min(S.m0-half,0);hi=Math.max(S.m0+half,0);
+  if(S.family==='beta'){lo=Math.min(priorQuantile(.001),0);hi=Math.max(priorQuantile(.999),0)}
+  else{const half=S.family==='uniform'?S.s0*1.2:S.s0*4;lo=Math.min(S.m0-half,0);hi=Math.max(S.m0+half,0)}
+  lo=Math.max(lo,-100);hi=Math.min(hi,100);
  }else{
-  lo=Math.min(P.quantile(.001),like.m+like.s*qt(.001,like.df),0,S.mcid);
-  hi=Math.max(P.quantile(.999),like.m+like.s*qt(.999,like.df),0,S.mcid);
+  lo=Math.min(P.quantile(.001),like.quantile(.001),0,S.mcid);
+  hi=Math.max(P.quantile(.999),like.quantile(.999),0,S.mcid);
  }
  const padding=(hi-lo)*.06;lo-=padding;hi+=padding;
  const X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);
  const eps=(hi-lo)*1e-8,edges=S.family==='uniform'?[S.m0-S.s0-eps,S.m0-S.s0,S.m0+S.s0,S.m0+S.s0+eps]:[];
  const curves=[{key:'prior',fn:x=>priorDensity(x),colour:'var(--prior)',dash:'6 4',on:priorOnly||S.show.prior},
-  {key:'like',fn:x=>dst(x,like.m,like.s,like.df),colour:'var(--like)',dash:'2 4',on:!priorOnly&&S.show.like},
+  {key:'like',fn:x=>like.pdf(x),colour:'var(--like)',dash:'2 4',on:!priorOnly&&S.show.like},
   {key:'post',fn:P.pdf,colour:'var(--post)',dash:'',on:!priorOnly&&S.show.post}];
  let ymax=0;
  for(const c of curves){c.points=curvePoints(lo,hi,c.fn,[...edges,0,S.mcid,S.m0,P.m]);if(c.on)for(const p of c.points)ymax=Math.max(ymax,p[1])}
@@ -446,7 +448,7 @@ function drawDensityPlot(id,mode){
  const Y=v=>yAx-v/ymax*(yAx-mt);
  const path=points=>points.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(2)+','+Y(p[1]).toFixed(2)).join(' ');
  let out='<title>'+esc(priorOnly?'Prior on the treatment effect':'Prior, likelihood and posterior for the treatment effect')+'</title>';
- out+='<desc>'+esc(priorOnly?FAMILY_NAMES[S.family]+' prior centred at '+S.m0+' units.':'Posterior mean '+f1(P.m)+' units, 95% credible interval '+f1(P.lo)+' to '+f1(P.hi)+' units.')+'</desc>';
+ out+='<desc>'+esc(priorOnly?FAMILY_NAMES[S.family]+' prior on the difference in clearance.':'Posterior mean '+f1(P.m)+' points, 95% credible interval '+f1(P.lo)+' to '+f1(P.hi)+' points.')+'</desc>';
  for(let i=0;i<=3;i++){
   const value=ymax*i/3,y=Y(value);
   out+=L(x0,y,x1,y,{stroke:'var(--line)'});
@@ -463,13 +465,13 @@ function drawDensityPlot(id,mode){
  out+=T(Math.max(x0+28,Math.min(x1-28,X(0))),23,'No effect',{anchor:'middle',size:15});
  if(!priorOnly){
   out+=L(X(S.mcid),mt-7,X(S.mcid),yAx,{stroke:'var(--ink-3)',dash:'3 4'});
-  out+=T(Math.max(x0+42,Math.min(x1-43,X(S.mcid))),46,'Threshold '+S.mcid+' units',{anchor:'middle',size:15});
+  out+=T(Math.max(x0+42,Math.min(x1-43,X(S.mcid))),46,'Threshold '+S.mcid+' points',{anchor:'middle',size:15});
  }
  for(const c of curves)if(c.on)out+='<path d="'+path(c.points)+'" fill="none" stroke="'+c.colour+'" stroke-width="2.6"'+(c.dash?' stroke-dasharray="'+c.dash+'"':'')+' stroke-linejoin="round"/>';
  if(!curves.some(c=>c.on))out+=T((x0+x1)/2,(mt+yAx)/2,'Select a curve to explore.',{anchor:'middle',size:16,fill:'var(--ink-2)'});
  out+=L(x0,yAx,x1,yAx,{stroke:'var(--rule-2)'});
- out+=T((x0+x1)/2,H-38,'Effect on eGFR change δ',{anchor:'middle',size:W<500?16:18});
- out+=T((x0+x1)/2,H-12,'(mL/min/1.73 m²)',{anchor:'middle',size:16});
+ out+=T((x0+x1)/2,H-38,'Difference in clearance δ',{anchor:'middle',size:W<500?16:18});
+ out+=T((x0+x1)/2,H-12,'(percentage points, new − standard)',{anchor:'middle',size:16});
  out+=T(x0,mt-8,'Density',{size:14});
  if(!priorOnly)out+='<line id="cross" x1="0" x2="0" y1="'+mt+'" y2="'+yAx+'" stroke="var(--ink)" opacity="0"/>';
  $(id).innerHTML=SVG(W,H,out);
@@ -481,7 +483,7 @@ function attachHover(){
   const rect=svg.getBoundingClientRect(),vx=(event.clientX-rect.left)*F2.W/rect.width;
   if(vx<F2.x0||vx>F2.x1){tip.style.opacity='0';cross.setAttribute('opacity','0');return}
   const value=F2.lo+(vx-F2.x0)/(F2.x1-F2.x0)*(F2.hi-F2.lo);
-  tip.textContent='δ = '+egfrUnits(value)+(S.show.post?' · P(δ > this) = '+pct(1-F2.P.cdf(value)):'');
+  tip.textContent='δ = '+ptsUnits(value)+(S.show.post?' · P(δ > this) = '+pct(1-F2.P.cdf(value)):'');
   tip.style.opacity='1';cross.setAttribute('x1',vx);cross.setAttribute('x2',vx);cross.setAttribute('opacity','.35');
   const bounds=wrap.getBoundingClientRect();
   tip.style.left=Math.max(0,Math.min(bounds.width-tip.offsetWidth,event.clientX-bounds.left+12))+'px';
@@ -492,16 +494,16 @@ function attachHover(){
 
 function comparisonRows(){
  const beliefs=$('comparison-mode').value==='beliefs';
- const rows=(beliefs?PRESETS.map(p=>({...p,family:S.family})):Object.keys(FAMILY_NAMES).map(family=>({name:FAMILY_NAMES[family],m:S.m0,s:S.s0,family}))).map(p=>{
-  const result=fit(p.m,p.s,S.sig0,S.nu0,p.family);
-  return {name:p.name,sub:beliefs?withSign(p.m)+' · scale '+f1(p.s)+' units':'',est:result.m,lo:result.lo,hi:result.hi,p0:1-result.cdf(0),you:!beliefs&&p.family===S.family};
+ const rows=(beliefs?PRESETS:Object.keys(FAMILY_NAMES).map(family=>({name:FAMILY_NAMES[family],m:S.m0,s:S.s0,family}))).map(p=>{
+  const result=fit(p.m,p.s,p.family);
+  return {name:p.name,sub:beliefs?(p.family==='beta'?'Beta('+histAB().map(v=>f1(v)).join(', ')+') on each arm':FAMILY_NAMES[p.family]+' '+withSign(p.m)+' · scale '+f1(p.s)+' points'):p.family==='beta'?'ignores centre and scale':'',est:result.m,lo:result.lo,hi:result.hi,p0:1-result.cdf(0),you:!beliefs&&p.family===S.family};
  });
  if(beliefs){const q=fit();rows.push({name:'Your prior',sub:FAMILY_NAMES[S.family],est:q.m,lo:q.lo,hi:q.hi,p0:1-q.cdf(0),you:true})}
- rows.push({name:'Data only',sub:'Pooled t confidence interval',est:D.dhat,lo:D.lo,hi:D.hi,p0:null,freq:true});return rows;
+ rows.push({name:'Data only',sub:'Wald 95% confidence interval',est:D.dhat,lo:D.lo,hi:D.hi,p0:null,freq:true});return rows;
 }
 function drawComparison(){
  const rows=comparisonRows(),beliefs=$('comparison-mode').value==='beliefs';
- $('comparison-note').textContent=beliefs?FAMILY_NAMES[S.family]+' priors with different '+(S.family==='cauchy'?'locations':'means')+' and scales. Same trial.':'Same centre and scale; different spreads and tails. Same trial.';
+ $('comparison-note').textContent=beliefs?'The video prior and three Normal priors on the effect. Same trial.':'Same centre and scale; different spreads and tails. Same trial.';
  const W=projectionMode()?chartWidth('fig3'):1000,mt=45,H=chartHeight('fig3',mt+rows.length*60+84);
  const rowH=(H-mt-84)/rows.length,x0=W*.235,x1=W*.66;
  let lo=Math.min(0,S.mcid,...rows.map(r=>r.lo)),hi=Math.max(0,S.mcid,...rows.map(r=>r.hi));
@@ -524,57 +526,59 @@ function drawComparison(){
   out+=T(W*.90,y+5,sgn1(r.est)+' ('+f1(r.lo)+' to '+f1(r.hi)+')',{anchor:'end',size:16});
   out+=T(W,y+5,r.p0===null?'—':pct(r.p0),{anchor:'end',size:16});
  });
- out+=T((x0+x1)/2,H-38,'Effect on eGFR change δ',{anchor:'middle',size:18});
- out+=T((x0+x1)/2,H-12,'(mL/min/1.73 m²)',{anchor:'middle',size:18});
+ out+=T((x0+x1)/2,H-38,'Difference in clearance δ',{anchor:'middle',size:18});
+ out+=T((x0+x1)/2,H-12,'(percentage points, new − standard)',{anchor:'middle',size:18});
  $('fig3').innerHTML=SVG(W,H,out);
- $('comparison-table').querySelector('tbody').innerHTML=rows.map(r=>'<tr'+(r.you?' style="background:var(--post-soft)"':'')+'><td>'+esc(r.name+(r.you?' · selected':''))+'</td><td>'+sgn1(r.est)+' units</td><td>'+f1(r.lo)+' to '+f1(r.hi)+' units'+(r.freq?' (CI)':' (CrI)')+'</td><td>'+(r.p0===null?'—':pct(r.p0))+'</td></tr>').join('');
+ $('comparison-table').querySelector('tbody').innerHTML=rows.map(r=>'<tr'+(r.you?' style="background:var(--post-soft)"':'')+'><td>'+esc(r.name+(r.you?' · selected':''))+'</td><td>'+sgn1(r.est)+' points</td><td>'+f1(r.lo)+' to '+f1(r.hi)+' points'+(r.freq?' (CI)':' (CrI)')+'</td><td>'+(r.p0===null?'—':pct(r.p0))+'</td></tr>').join('');
 }
 
 const familyDescriptions={
+ beta:'The video prior: each arm gets the standard-care Beta prior, so no benefit is assumed. This is the prior it implies for δ.',
  normal:'Symmetric, light tails. Scale is the standard deviation.',
  cauchy:'Very heavy tails. The mean and standard deviation are undefined.',
  laplace:'A sharp centre with exponential tails.',
  uniform:'Equally plausible within the bounds; impossible outside.'
 };
 function drawReadouts(){
- const P=fit(),name=FAMILY_NAMES[S.family],p0=1-P.cdf(0),pm=1-P.cdf(S.mcid);
- $('data-summary').textContent=S.n+' per arm';
+ const P=fit(),beta=S.family==='beta',name=beta?'Video prior · Beta per arm':FAMILY_NAMES[S.family],p0=1-P.cdf(0),pm=1-P.cdf(S.mcid),[ha,hb]=histAB();
+ $('data-summary').textContent=(S.src==='video'?'Video trial · ':'Simulated · ')+D.n+' per arm';
  $('priors-summary').textContent=name;
- $('results-summary').textContent=sgn1(P.m)+' units';
- $('data-estimate').innerHTML='<strong>Difference between groups:</strong> '+sgn1(D.dhat)+' units &nbsp;(SE '+f1(D.sep)+' units, <i>t</i> = '+f1(D.tstat)+' on '+D.dfp+' df, <i>p</i> = '+pr2(D.p)+')';
+ $('results-summary').textContent='P(benefit) '+pct(p0);
+ $('look-field').hidden=S.src!=='video';$('sim-fields').hidden=S.src==='video';
+ $('data-estimate').innerHTML='<strong>Observed clearance:</strong> new therapy '+D.xt+'/'+D.n+' ('+Math.round(100*D.rt)+'%) vs standard care '+D.xc+'/'+D.n+' ('+Math.round(100*D.rc)+'%). Difference '+sgn1(D.dhat)+' points (95% CI '+f1(D.lo)+' to '+f1(D.hi)+'; <i>p</i> = '+pr2(D.p)+')';
+ document.querySelector('.prior-fields').hidden=beta;
  $('location-label').textContent=S.family==='cauchy'?'Location':'Mean';
  $('scale-label').textContent=S.family==='normal'?'Standard deviation':S.family==='laplace'?'Scale · b':S.family==='uniform'?'Half-width':'Scale';
- $('parameter-note').textContent=S.family==='uniform'?'Bounds: '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' units. Zero probability outside.':S.family==='normal'?'About 95% of prior probability lies within 1.96 SDs of the mean.':S.family==='cauchy'?'Half the prior probability lies within one scale of the location.':'Prior SD = '+f1(Math.SQRT2*S.s0)+' units.';
+ $('parameter-note').textContent=beta?'Each arm: Beta('+f1(ha)+', '+f1(hb)+'), as in the video. Change it under “Prior on clearance with standard care”.':S.family==='uniform'?'Bounds: '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' points. Zero probability outside.':S.family==='normal'?'About 95% of prior probability lies within 1.96 SDs of the mean.':S.family==='cauchy'?'Half the prior probability lies within one scale of the location.':'Prior SD = '+f1(Math.SQRT2*S.s0)+' points.';
  $('prior-explanation').textContent=familyDescriptions[S.family];
- $('prior-family-name').textContent=name+' prior';
- $('prior-plot-note').textContent=S.family==='uniform'?'Zero density outside the bounds.':'Tails extend beyond the plot.';
- $('prior-centre').textContent=withSign(S.m0);
+ $('prior-family-name').textContent=name+(beta?'':' prior');
+ $('prior-plot-note').textContent=beta?'Implied prior for the difference in clearance.':S.family==='uniform'?'Zero density outside the bounds.':'Tails extend beyond the plot.';
+ $('prior-centre').textContent=withSign(beta?0:S.m0);
  $('prior-centre-label').textContent=S.family==='cauchy'?'Prior median':'Prior mean';
  $('prior-centre-note').textContent=S.family==='cauchy'?'Median treatment effect':'Expected treatment effect';
- $('prior-interval').textContent=f1(priorQuantile(.025))+' to '+f1(priorQuantile(.975));
+ $('prior-interval').textContent=f1(Math.max(-100,priorQuantile(.025)))+' to '+f1(Math.min(100,priorQuantile(.975)));
  $('prior-prob').textContent=pct(1-priorCDF(0));
- $('ig-txt').textContent='Inv-Gamma(shape '+f1(S.nu0/2)+', scale '+sig3(S.nu0*S.sig0*S.sig0/2)+').';
- $('posterior-family').textContent=name+' prior';
- $('posterior-mean').textContent=sgn1(P.m)+' units';
- $('posterior-interval').textContent='95% CrI: '+f1(P.lo)+' to '+f1(P.hi)+' units';
+ $('ig-txt').textContent='Beta('+f1(ha)+', '+f1(hb)+').';
+ $('posterior-family').textContent=name+(beta?'':' prior');
+ $('posterior-mean').textContent=sgn1(P.m)+' points';
+ $('posterior-interval').textContent='95% CrI: '+f1(P.lo)+' to '+f1(P.hi)+' points';
  $('posterior-p0').textContent=pct(p0);$('posterior-pm').textContent=pct(pm);
- $('posterior-threshold').textContent='Probability that δ > '+S.mcid+' units';
+ $('posterior-threshold').textContent='Probability that δ > '+S.mcid+' points';
+ const verdict=p0>.975?'<strong style="color:var(--good)">stop for success</strong>':pm<.10?'<strong>stop for futility</strong>':'<strong>continue</strong>, neither rule is met';
+ $('decision').innerHTML='Video stopping rules: success if P(δ &gt; 0) &gt; 97.5%, futility if P(δ &gt; '+S.mcid+') &lt; 10%. Here: '+pct(p0)+' and '+pct(pm)+' → '+verdict+'.';
  $('result-reading').hidden=S.family!=='uniform';
- $('result-reading').textContent='Effects outside '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' units remain excluded.';
- document.querySelectorAll('.chip').forEach(button=>button.setAttribute('aria-pressed',String(Math.abs(+button.dataset.m-S.m0)<.051&&Math.abs(+button.dataset.s-S.s0)<.031)));
- const presetIndex=PRESETS.findIndex(p=>Math.abs(p.m-S.m0)<.051&&Math.abs(p.s-S.s0)<.031);
+ $('result-reading').textContent='Effects outside '+f1(S.m0-S.s0)+' to '+f1(S.m0+S.s0)+' points remain excluded.';
+ const presetIndex=PRESETS.findIndex(p=>p.family===S.family&&(p.family==='beta'||Math.abs(p.m-S.m0)<.51&&Math.abs(p.s-S.s0)<.051));
+ document.querySelectorAll('.chip').forEach(button=>button.setAttribute('aria-pressed',String(+button.dataset.p===presetIndex)));
  $('focus-preset').value=presetIndex<0?'':String(presetIndex);
- for(const id of ['n','tau','sd','m0','s0','sig0','nu0','mcid']){
-  const input=$(id),output=$(id+'-v');
-  const value=id==='s0'?S.s0:id==='nu0'?S.nu0:S[id];
-  output.textContent=['tau','m0'].includes(id)?withSign(value):['sd','sig0','mcid'].includes(id)?value+' units':id==='s0'?f1(value)+' units':id==='nu0'?f1(value):value;
-  input.setAttribute('aria-valuetext',output.textContent);
- }
- $('seed-v').textContent=S.seed;
+ $('family').value=S.family;
+ const out={look:S.look,n:S.n,pc:S.pc+'%',pt:S.pt+'%',m0:withSign(S.m0),s0:f1(S.s0)+' points',hm:S.hm+'%',hw:S.hw,mcid:S.mcid+' points'};
+ for(const id in out){$(id+'-v').textContent=out[id];$(id).setAttribute('aria-valuetext',String(out[id]))}
+ $('seed-v').textContent=S.src==='video'?'video trial':S.seed;
 }
 function renderActive(){
  if(activeStage==='data'){
-  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Simulated 12-month changes in eGFR in the standard-care and alternative treatment groups. The difference between groups appears below.');
+  drawFig1();$('fig1').querySelector('svg').setAttribute('aria-label','Patients who cleared BK viraemia in the standard-care and new-therapy arms. Counts appear below.');
  }else if(activeStage==='priors')drawDensityPlot('prior-plot','prior');
  else if(activeStage==='results'){drawDensityPlot('fig2','result');if($('sensitivity').open)drawComparison()}
 }
@@ -617,24 +621,20 @@ document.querySelectorAll('.focus-button').forEach(button=>button.addEventListen
 $('focus-dialog').addEventListener('cancel',event=>{event.preventDefault();exitFocus()});
 $('focus-dialog').addEventListener('click',event=>{if(event.target===$('focus-dialog'))exitFocus()});
 $('collapse-all').addEventListener('click',()=>openStage(null));
-for(const id of ['n','tau','sd'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;simulate();redraw()});
-for(const id of ['m0','sig0','mcid'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;if(id!=='mcid')fitCache.clear();redraw()});
-$('s0').value=sliderFromS0(S.s0);$('nu0').value=sliderFromNu(S.nu0);
+for(const id of ['look','n','pc','pt'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;simulate();redraw()});
+$('src').addEventListener('change',()=>{S.src=$('src').value;simulate();redraw()});
+for(const id of ['m0','mcid'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;if(id!=='mcid')fitCache.clear();redraw()});
+for(const id of ['hm','hw'])$(id).addEventListener('input',()=>{S[id]=+$(id).value;fitCache.clear();LIKE=null;redraw()});
+$('s0').value=sliderFromS0(S.s0);
 $('s0').addEventListener('input',()=>{S.s0=s0FromSlider(+$('s0').value);fitCache.clear();redraw()});
-$('nu0').addEventListener('input',()=>{S.nu0=nuFromSlider(+$('nu0').value);fitCache.clear();redraw()});
 $('family').addEventListener('change',()=>{S.family=$('family').value;fitCache.clear();redraw()});
-$('focus-preset').addEventListener('change',()=>{
- if($('focus-preset').value==='')return;
- const preset=PRESETS[+$('focus-preset').value];
- S.m0=preset.m;S.s0=preset.s;$('m0').value=S.m0;$('s0').value=sliderFromS0(S.s0);fitCache.clear();redraw();
-});
-document.querySelectorAll('.chip').forEach(button=>button.addEventListener('click',()=>{
- S.m0=+button.dataset.m;S.s0=+button.dataset.s;$('m0').value=S.m0;$('s0').value=sliderFromS0(S.s0);fitCache.clear();redraw();
-}));
+function applyPreset(k){const p=PRESETS[k];S.family=p.family;S.m0=p.m;S.s0=p.s;$('m0').value=S.m0;$('s0').value=sliderFromS0(S.s0);fitCache.clear();redraw()}
+$('focus-preset').addEventListener('change',()=>{if($('focus-preset').value!=='')applyPreset(+$('focus-preset').value)});
+document.querySelectorAll('.chip').forEach(button=>button.addEventListener('click',()=>applyPreset(+button.dataset.p)));
 document.querySelectorAll('.check input[data-k]').forEach(input=>input.addEventListener('change',()=>{S.show[input.dataset.k]=input.checked;renderActive()}));
 $('comparison-mode').addEventListener('change',drawComparison);
 $('sensitivity').addEventListener('toggle',()=>{if($('sensitivity').open)requestAnimationFrame(drawComparison)});
-$('resim').addEventListener('click',()=>{S.seed=(S.seed+1+Math.floor(Math.random()*8999))%100000;simulate();redraw()});
+$('resim').addEventListener('click',()=>{if(S.src==='video'){S.src='sim';$('src').value='sim'}else S.seed=(S.seed+1+Math.floor(Math.random()*8999))%100000;simulate();redraw()});
 let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(renderActive,120)});
 simulate();redraw();
 
